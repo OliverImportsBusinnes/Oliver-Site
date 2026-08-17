@@ -1,0 +1,33 @@
+{
+  "name": "oliver-imports-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c green,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "build": "vite build",
+    "start": "node server.js",
+    "preview": "vite preview",
+    "test": "node --test",
+    "db:migrate": "node scripts/db-migrate.mjs",
+    "db:seed-admin": "node scripts/db-seed-admin.mjs",
+    "test:server": "node --test \"tests/server/*.test.js\"",
+    "dev:api": "node scripts/dev-api.mjs",
+    "dev:web": "vite",
+    "setup": "node scripts/setup.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.23.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.18.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^10.0.4",
+    "vite": "^7.1.9"
+  }
+}

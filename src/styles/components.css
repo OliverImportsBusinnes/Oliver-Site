@@ -1,0 +1,278 @@
+/* =========================================================
+   Primitivas de layout e componentes reutilizáveis
+   ========================================================= */
+
+/* ---------- Container ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- Seção ---------- */
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+}
+
+/* Respiro extra para os blocos âncora (projetos e contato). */
+.section--lg {
+  padding-block: var(--section-y-lg);
+}
+
+/* Faixa sutil que separa a área de tecnologias do restante. */
+.section--stack {
+  border-block: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+/* ---------- Cabeçalho de seção ---------- */
+.section-head {
+  max-width: 42rem;
+  margin-bottom: var(--head-gap);
+}
+
+.section-head__title {
+  font-size: var(--fs-h2);
+  margin-top: 0.9rem;
+}
+
+.section-head__text {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  margin-top: 0.9rem;
+}
+
+/* ---------- Eyebrow ---------- */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.eyebrow__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green-400);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.16);
+  flex: none;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.35rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  transition: transform var(--t-fast), translate var(--t-mid),
+    background-color var(--t-fast), border-color var(--t-fast),
+    box-shadow var(--t-fast), color var(--t-fast);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn__icon {
+  flex: none;
+  transition: transform var(--t-mid);
+}
+
+.btn:hover .btn__icon {
+  transform: translateX(3px);
+}
+
+/* Primário — verde sólido */
+.btn--primary {
+  background: var(--green-500);
+  color: #04120a;
+  box-shadow: 0 10px 26px -12px var(--green-glow);
+}
+
+.btn--primary:hover {
+  background: var(--green-400);
+  box-shadow: 0 14px 34px -12px rgba(34, 197, 94, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn--primary:active {
+  transform: translateY(0);
+}
+
+/* Secundário — contorno */
+.btn--ghost {
+  background: var(--surface);
+  color: var(--white);
+  border: 1px solid var(--border-strong);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-hover);
+  border-color: var(--green-line);
+  color: var(--green-300);
+  transform: translateY(-2px);
+}
+
+/* Sutil — ações secundárias dentro de listas e tabelas.
+   Substituiu os botões avulsos que existiam antes (table__action, unlink,
+   funnel__back, panel__logout), que tinham cada um seu próprio tamanho. */
+.btn--soft {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn--soft:hover {
+  color: var(--white);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+
+/* Destrutivo */
+.btn--danger {
+  background: #dc2626;
+  color: #fff;
+}
+
+.btn--danger:hover {
+  background: #ef4444;
+  transform: translateY(-2px);
+}
+
+/* Contorno destrutivo — para "Excluir" dentro de uma linha. */
+.btn--danger-soft {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.btn--danger-soft:hover {
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.08);
+}
+
+/* ---- Tamanhos: uma escala só para o produto inteiro ---- */
+.btn--xs {
+  padding: 0.38rem 0.75rem;
+  font-size: var(--fs-xs);
+  gap: 0.35rem;
+}
+
+.btn--sm {
+  padding: 0.6rem 1.05rem;
+  font-size: var(--fs-xs);
+}
+
+.btn--lg {
+  padding: 1rem 1.75rem;
+  font-size: 1rem;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+/* Só ícone: mantém a área de toque quadrada. */
+.btn--icon {
+  padding: 0;
+  width: 38px;
+  height: 38px;
+}
+
+.btn--icon.btn--xs {
+  width: 30px;
+  height: 30px;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  transform: none;
+}
+
+/* ---------- Tag (tecnologias) ---------- */
+.tag {
+  display: inline-block;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+/* ---------- Reveal no scroll ----------
+   Escondido apenas quando o JS assumiu a página (classe `js` no <html>).
+   Sem JS, o conteúdo aparece normalmente em vez de ficar invisível. */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity var(--t-slow), transform var(--t-slow);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Tela de falha (ErrorBoundary) ---------- */
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 100dvh;
+  padding: var(--gutter);
+  text-align: center;
+}
+
+.fallback__title {
+  font-size: var(--fs-h2);
+}
+
+.fallback__text {
+  max-width: 34rem;
+  color: var(--muted);
+}
+
+/* ---------- Utilitários ---------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

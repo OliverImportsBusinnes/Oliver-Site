@@ -1,0 +1,74 @@
+/* =========================================================
+   Design tokens — Oliver Imports
+   Base preta, verde como acento estratégico.
+   ========================================================= */
+
+:root {
+  /* ---- Cores base ---- */
+  --bg: #050807;
+  --bg-elev: #0a0e0c;
+  --surface: rgba(255, 255, 255, 0.024);
+  --surface-hover: rgba(255, 255, 255, 0.045);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* ---- Verde (acento) ---- */
+  --green-300: #86efac;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-soft: rgba(34, 197, 94, 0.12);
+  --green-line: rgba(34, 197, 94, 0.32);
+  --green-glow: rgba(34, 197, 94, 0.28);
+
+  /* Neutros para ícone/caixa decorativa. O verde fica para ação e estado —
+     usar verde em tudo tira o destaque justamente de onde importa. */
+  --icon-bg: rgba(255, 255, 255, 0.05);
+  --icon-border: rgba(255, 255, 255, 0.1);
+  --icon-fg: #b9c4bf;
+
+  /* ---- Texto ---- */
+  --white: #ffffff;
+  --text: #e6eae8;
+  --muted: #98a29d;
+  /* Clareado para passar no contraste AA (4.5:1) sobre o fundo preto. */
+  --muted-dim: #7b8580;
+
+  /* ---- Layout ----
+     Ritmo vertical enxuto: as seções respiram sem abrir buracos na página. */
+  --container: 1180px;
+  --gutter: clamp(1.25rem, 4vw, 2.25rem);
+  --section-y: clamp(3.25rem, 5.5vw, 5rem);
+  --section-y-lg: clamp(4rem, 7vw, 6.5rem);
+  --head-gap: clamp(1.75rem, 3vw, 2.5rem);
+  --header-h: 68px;
+
+  /* ---- Raios ---- */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* ---- Sombras ---- */
+  --shadow-md: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+
+  /* ---- Tipografia ---- */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo,
+    Consolas, monospace;
+
+  --fs-display: clamp(2.25rem, 5vw, 3.6rem);
+  --fs-h2: clamp(1.6rem, 3.2vw, 2.35rem);
+  --fs-lead: clamp(1rem, 1.5vw, 1.175rem);
+  --fs-body: 1rem;
+  --fs-sm: 0.9375rem;
+  --fs-xs: 0.8125rem;
+
+  /* ---- Movimento ---- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-fast: 180ms var(--ease);
+  --t-mid: 320ms var(--ease);
+  --t-slow: 620ms var(--ease);
+}

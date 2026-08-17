@@ -1,0 +1,74 @@
+# ===========================================================================
+# Oliver Imports — site institucional + painel (Node no Render)
+# ---------------------------------------------------------------------------
+# UM serviço só serve o site (dist/) e a API (/api/*). Isso é proposital: o
+# cookie de sessão é SameSite=Lax, então site e API precisam estar na mesma
+# origem. Separá-los exigiria SameSite=None, que enfraquece a defesa de CSRF.
+#
+# O banco fica no Neon e NÃO é declarado aqui: `DATABASE_URL` é preenchida à
+# mão no dashboard (sync: false). Com `fromDatabase` ou valor fixo, um sync do
+# Blueprint sobrescreveria a URI e o site passaria a apontar para outro banco
+# sem erro visível.
+# ===========================================================================
+
+services:
+  - type: web
+    # Precisa bater com o nome do serviço que já existe no Render, senão um
+    # sync do Blueprint cria um segundo serviço em vez de atualizar este.
+    name: oliver-imports-site
+    runtime: node
+    plan: free
+    region: virginia
+
+    # `--include=dev` é obrigatório, não é preferência: `NODE_ENV=production`
+    # (definido abaixo) também vale durante o build, e o npm passa a omitir as
+    # devDependencies. O Vite está justamente ali — sem a flag, o build morre
+    # com "vite: not found" antes de gerar `dist/`.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+
+    # O Render considera o serviço saudável quando esta rota responde 200.
+    healthCheckPath: /api/health
+
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+      # Liga o `Secure` no cookie de sessão e o modo de produção do Node.
+      - key: NODE_ENV
+        value: production
+
+      - key: DATABASE_DRIVER
+        value: postgres
+
+      # URI "pooled" do Neon, colada no dashboard do Render. Contém a senha do
+      # banco: nunca versione este valor.
+      - key: DATABASE_URL
+        sync: false
+
+      # Assina os identificadores de sessão. Trocar o valor derruba todo mundo
+      # que estiver logado — por isso é definida à mão e guardada, e não
+      # gerada a cada serviço.
+      - key: SESSION_SECRET
+        sync: false
+
+      # URL pública deste serviço. É o que autoriza POST/PUT/PATCH/DELETE
+      # (defesa de CSRF). Deixar em branco no primeiro deploy é seguro: o
+      # servidor cai no `RENDER_EXTERNAL_URL`, que o próprio Render injeta com
+      # o endereço .onrender.com. Preencher só é necessário ao ligar domínio
+      # próprio — e aí liste apex e www, que são origens distintas para o
+      # navegador.
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+      # E-mail de contato exibido no site. É público (vai para o JavaScript do
+      # navegador) — é exatamente para isso que serve o prefixo VITE_.
+      - key: VITE_COMPANY_EMAIL
+        sync: false
+
+      # Endereço público usado em canonical, Open Graph e Twitter Card. É lido
+      # no BUILD (o Vite carimba o valor no index.html), então mudá-lo exige um
+      # novo deploy para valer. Em branco, cai na URL .onrender.com deste
+      # serviço. Sem barra final.
+      - key: VITE_SITE_URL
+        sync: false

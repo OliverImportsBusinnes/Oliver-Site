@@ -1,0 +1,15 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+.env.*
+!.env.example
+
+# Banco local (SQLite) — nunca versionar
+server/data/
+*.db
+*.sqlite
+
+# Preferências locais do Claude Code (valem só nesta máquina)
+.claude/settings.local.json

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" width="800" height="560" role="img" aria-label="Interface de sistema de gestao">
+  <defs>
+    <linearGradient id="erpBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0a0f0d"/>
+      <stop offset="1" stop-color="#060908"/>
+    </linearGradient>
+    <linearGradient id="erpBar" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#4ade80" stop-opacity="0.95"/>
+    </linearGradient>
+    <radialGradient id="erpGlow" cx="0.78" cy="0.12" r="0.7">
+      <stop offset="0" stop-color="#22c55e" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#22c55e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="560" fill="url(#erpBg)"/>
+  <rect width="800" height="560" fill="url(#erpGlow)"/>
+
+  <!-- barra lateral -->
+  <rect x="40" y="40" width="132" height="480" rx="16" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+  <rect x="62" y="66" width="26" height="26" rx="8" fill="#22c55e" fill-opacity="0.9"/>
+  <rect x="98" y="74" width="46" height="10" rx="5" fill="#ffffff" fill-opacity="0.35"/>
+  <g fill="#ffffff" fill-opacity="0.12">
+    <rect x="62" y="130" width="88" height="10" rx="5"/>
+    <rect x="62" y="166" width="68" height="10" rx="5"/>
+    <rect x="62" y="202" width="80" height="10" rx="5"/>
+    <rect x="62" y="238" width="58" height="10" rx="5"/>
+  </g>
+  <rect x="52" y="120" width="4" height="30" rx="2" fill="#22c55e"/>
+
+  <!-- topo -->
+  <rect x="196" y="40" width="564" height="56" rx="14" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+  <rect x="218" y="60" width="150" height="14" rx="7" fill="#ffffff" fill-opacity="0.3"/>
+  <rect x="640" y="56" width="98" height="24" rx="12" fill="#22c55e" fill-opacity="0.16" stroke="#22c55e" stroke-opacity="0.4"/>
+
+  <!-- cartoes de resumo -->
+  <g>
+    <rect x="196" y="120" width="178" height="104" rx="14" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+    <rect x="218" y="144" width="54" height="8" rx="4" fill="#ffffff" fill-opacity="0.2"/>
+    <rect x="218" y="166" width="96" height="18" rx="6" fill="#ffffff" fill-opacity="0.55"/>
+    <rect x="218" y="196" width="40" height="8" rx="4" fill="#22c55e" fill-opacity="0.7"/>
+  </g>
+  <g>
+    <rect x="389" y="120" width="178" height="104" rx="14" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+    <rect x="411" y="144" width="66" height="8" rx="4" fill="#ffffff" fill-opacity="0.2"/>
+    <rect x="411" y="166" width="80" height="18" rx="6" fill="#ffffff" fill-opacity="0.55"/>
+    <rect x="411" y="196" width="52" height="8" rx="4" fill="#22c55e" fill-opacity="0.7"/>
+  </g>
+  <g>
+    <rect x="582" y="120" width="178" height="104" rx="14" fill="#22c55e" fill-opacity="0.08" stroke="#22c55e" stroke-opacity="0.32"/>
+    <rect x="604" y="144" width="48" height="8" rx="4" fill="#4ade80" fill-opacity="0.5"/>
+    <rect x="604" y="166" width="88" height="18" rx="6" fill="#4ade80" fill-opacity="0.9"/>
+    <rect x="604" y="196" width="36" height="8" rx="4" fill="#4ade80" fill-opacity="0.5"/>
+  </g>
+
+  <!-- grafico -->
+  <rect x="196" y="248" width="364" height="272" rx="14" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+  <rect x="218" y="272" width="92" height="10" rx="5" fill="#ffffff" fill-opacity="0.25"/>
+  <g fill="url(#erpBar)">
+    <rect x="222" y="418" width="30" height="70" rx="6"/>
+    <rect x="268" y="380" width="30" height="108" rx="6"/>
+    <rect x="314" y="404" width="30" height="84" rx="6"/>
+    <rect x="360" y="338" width="30" height="150" rx="6"/>
+    <rect x="406" y="360" width="30" height="128" rx="6"/>
+    <rect x="452" y="316" width="30" height="172" rx="6"/>
+    <rect x="498" y="346" width="30" height="142" rx="6"/>
+  </g>
+  <line x1="218" y1="496" x2="538" y2="496" stroke="#ffffff" stroke-opacity="0.1"/>
+
+  <!-- lista / comandas -->
+  <rect x="582" y="248" width="178" height="272" rx="14" fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.07"/>
+  <g>
+    <rect x="604" y="272" width="70" height="10" rx="5" fill="#ffffff" fill-opacity="0.25"/>
+    <g fill="#ffffff" fill-opacity="0.09">
+      <rect x="604" y="304" width="134" height="34" rx="8"/>
+      <rect x="604" y="350" width="134" height="34" rx="8"/>
+      <rect x="604" y="396" width="134" height="34" rx="8"/>
+      <rect x="604" y="442" width="134" height="34" rx="8"/>
+    </g>
+    <g fill="#22c55e">
+      <circle cx="620" cy="321" r="4"/>
+      <circle cx="620" cy="367" r="4" fill-opacity="0.5"/>
+      <circle cx="620" cy="413" r="4" fill-opacity="0.5"/>
+      <circle cx="620" cy="459" r="4" fill-opacity="0.5"/>
+    </g>
+    <g fill="#ffffff" fill-opacity="0.28">
+      <rect x="636" y="317" width="64" height="8" rx="4"/>
+      <rect x="636" y="363" width="48" height="8" rx="4"/>
+      <rect x="636" y="409" width="72" height="8" rx="4"/>
+      <rect x="636" y="455" width="56" height="8" rx="4"/>
+    </g>
+  </g>
+</svg>

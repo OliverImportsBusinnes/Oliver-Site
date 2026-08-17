@@ -1,0 +1,61 @@
+/* =========================================================================
+   Cookie de sessão.
+
+   HttpOnly  → JavaScript da página não lê o token (limita o estrago de XSS)
+   Secure    → só trafega em HTTPS (desligado em dev, senão não funciona)
+   SameSite  → Lax barra envio em requisição cross-site (defesa de CSRF)
+   Path=/    → vale para toda a aplicação
+   ========================================================================= */
+
+import { SECURITY, config } from '../config.js';
+
+export function parseCookies(header) {
+  const cookies = {};
+  if (typeof header !== 'string' || !header) return cookies;
+
+  for (const part of header.split(';')) {
+    const index = part.indexOf('=');
+    if (index < 1) continue;
+
+    const name = part.slice(0, index).trim();
+    const value = part.slice(index + 1).trim();
+    if (!name) continue;
+
+    try {
+      cookies[name] = decodeURIComponent(value);
+    } catch {
+      cookies[name] = value; // valor malformado não derruba o parser
+    }
+  }
+
+  return cookies;
+}
+
+export function serializeSessionCookie(token, { maxAgeMs }) {
+  const parts = [
+    `${SECURITY.SESSION_COOKIE}=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${Math.floor(maxAgeMs / 1000)}`,
+  ];
+
+  if (config.isProduction) parts.push('Secure');
+
+  return parts.join('; ');
+}
+
+/** Cookie já vencido: é assim que o logout apaga a sessão no navegador. */
+export function serializeClearedSessionCookie() {
+  const parts = [
+    `${SECURITY.SESSION_COOKIE}=`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0',
+  ];
+
+  if (config.isProduction) parts.push('Secure');
+
+  return parts.join('; ');
+}

@@ -1,0 +1,582 @@
+/* =========================================================
+   Sobreposições e blocos interativos:
+   modal de projeto · funil compacto · WhatsApp flutuante
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   Modal de projeto
+   --------------------------------------------------------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  background: rgba(2, 4, 3, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: modal-fade 220ms var(--ease) both;
+}
+
+.modal__dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(880px, 100%);
+  max-height: min(88dvh, 900px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-xl);
+  background: var(--bg-elev);
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  animation: modal-rise 300ms var(--ease) both;
+}
+
+.modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__category {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-400);
+}
+
+.modal__title {
+  margin-top: 0.5rem;
+  font-size: clamp(1.25rem, 2.6vw, 1.65rem);
+}
+
+.modal__close {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--muted);
+  transition: color var(--t-fast), border-color var(--t-fast),
+    background-color var(--t-fast);
+}
+
+.modal__close:hover {
+  color: var(--white);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+
+.modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  overflow-y: auto;
+}
+
+.modal__media {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.modal__media img {
+  width: 100%;
+  height: auto;
+}
+
+.modal__gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.6rem;
+}
+
+.modal__gallery img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+}
+
+.modal__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: clamp(1rem, 2vw, 1.75rem);
+}
+
+.modal__block p {
+  margin-top: 0.6rem;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.modal__block-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-400);
+}
+
+.modal__features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.modal__features li {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: var(--fs-sm);
+  color: var(--text);
+}
+
+.modal__features svg {
+  flex: none;
+  color: var(--green-400);
+}
+
+.modal__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.modal__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.25rem) clamp(1.25rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.modal__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.modal__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-500);
+}
+
+.modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------
+   Funil compacto
+   --------------------------------------------------------- */
+.funnel {
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.035),
+    rgba(255, 255, 255, 0.01)
+  );
+}
+
+.funnel__progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding-bottom: 1.15rem;
+  margin-bottom: 1.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.funnel__progress-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.funnel__progress-item:not(:last-child)::after {
+  content: '';
+  width: clamp(12px, 3vw, 28px);
+  height: 1px;
+  background: var(--border);
+  transition: background-color var(--t-mid);
+}
+
+.funnel__progress-item.is-done:not(:last-child)::after {
+  background: var(--green-line);
+}
+
+.funnel__progress-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.4rem;
+  border-radius: var(--r-pill);
+  color: var(--muted-dim);
+  transition: color var(--t-fast);
+}
+
+.funnel__progress-btn:disabled {
+  cursor: default;
+}
+
+.funnel__progress-btn:not(:disabled):hover {
+  color: var(--text);
+}
+
+.funnel__progress-number {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  transition: background-color var(--t-mid), border-color var(--t-mid),
+    color var(--t-mid);
+}
+
+.funnel__progress-item.is-current .funnel__progress-btn {
+  color: var(--white);
+}
+
+.funnel__progress-item.is-current .funnel__progress-number {
+  border-color: var(--green-500);
+  background: var(--green-500);
+  color: #04120a;
+}
+
+.funnel__progress-item.is-done .funnel__progress-btn {
+  color: var(--green-300);
+}
+
+.funnel__progress-item.is-done .funnel__progress-number {
+  border-color: var(--green-line);
+  background: var(--green-soft);
+  color: var(--green-400);
+}
+
+.funnel__progress-label {
+  font-size: var(--fs-xs);
+}
+
+.funnel__panel {
+  outline: none;
+}
+
+.funnel__step {
+  animation: funnel-in 340ms var(--ease) both;
+}
+
+.funnel__question {
+  margin-bottom: 1rem;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--white);
+}
+
+.funnel__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.funnel__options--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+  gap: 0.45rem;
+}
+
+.funnel__option {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  text-align: left;
+  transition: border-color var(--t-fast), background-color var(--t-fast),
+    color var(--t-fast), transform var(--t-fast);
+}
+
+.funnel__option svg {
+  flex: none;
+  color: var(--muted-dim);
+  transition: color var(--t-fast);
+}
+
+.funnel__option:hover {
+  transform: translateY(-2px);
+  border-color: var(--green-line);
+  background: var(--surface-hover);
+}
+
+.funnel__option:hover svg {
+  color: var(--green-400);
+}
+
+.funnel__option.is-selected {
+  border-color: var(--green-500);
+  background: var(--green-soft);
+  color: var(--green-300);
+}
+
+.funnel__option.is-selected svg {
+  color: var(--green-400);
+}
+
+.funnel__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  transition: color var(--t-fast), background-color var(--t-fast);
+}
+
+.funnel__back:hover {
+  color: var(--white);
+  background: var(--surface-hover);
+}
+
+.funnel__back-icon {
+  transform: rotate(180deg);
+}
+
+.funnel__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.funnel__chip {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--green-line);
+  border-radius: var(--r-pill);
+  background: var(--green-soft);
+  font-size: var(--fs-xs);
+  color: var(--green-300);
+}
+
+.funnel__preview-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-dim);
+}
+
+.funnel__preview {
+  margin-top: 0.55rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--green-line);
+  border-radius: var(--r-sm);
+  background: rgba(34, 197, 94, 0.07);
+  font-size: var(--fs-sm);
+  color: var(--text);
+  white-space: pre-line;
+}
+
+.funnel__done-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.15rem;
+}
+
+/* ---------------------------------------------------------
+   WhatsApp flutuante
+   --------------------------------------------------------- */
+.floating-wa {
+  position: fixed;
+  right: clamp(1rem, 3vw, 1.5rem);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(1rem, 3vw, 1.5rem));
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--green-500);
+  color: #04120a;
+  box-shadow: 0 14px 34px -10px rgba(34, 197, 94, 0.55);
+  opacity: 0;
+  transform: translateY(16px) scale(0.9);
+  pointer-events: none;
+  transition: opacity var(--t-mid), transform var(--t-mid),
+    background-color var(--t-fast);
+}
+
+.floating-wa.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.floating-wa:hover {
+  background: var(--green-400);
+}
+
+.floating-wa svg {
+  position: relative;
+}
+
+.floating-wa__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--green-500);
+  animation: wa-pulse 2.8s ease-out infinite;
+  pointer-events: none;
+}
+
+.floating-wa__tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: #0c110f;
+  color: var(--text);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(8px);
+  pointer-events: none;
+  transition: opacity var(--t-fast), transform var(--t-fast);
+}
+
+.floating-wa:hover .floating-wa__tooltip,
+.floating-wa:focus-visible .floating-wa__tooltip {
+  opacity: 1;
+  transform: none;
+}
+
+/* =========================================================
+   Keyframes
+   ========================================================= */
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes funnel-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes wa-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   Responsivo / menos movimento
+   ========================================================= */
+@media (max-width: 560px) {
+  .funnel__progress-label {
+    display: none;
+  }
+
+  .modal__foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .modal__actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .floating-wa__tooltip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .funnel__step,
+  .modal,
+  .modal__dialog,
+  .mockup__chart-bar {
+    animation: none;
+  }
+
+  .floating-wa__pulse,
+  .featured__status-dot {
+    animation: none;
+  }
+
+  .floating-wa__pulse {
+    opacity: 0;
+  }
+}

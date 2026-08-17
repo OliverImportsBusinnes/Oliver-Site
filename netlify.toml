@@ -1,0 +1,59 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # O back-end usa `node:sqlite` em desenvolvimento e recursos modernos do
+  # Node; 20 é o mínimo seguro para as Functions.
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
+  # O driver PostgreSQL é carregado dinamicamente: precisa ir junto no pacote.
+  external_node_modules = ["pg"]
+
+# ---------------------------------------------------------------------------
+# ORDEM IMPORTA: o primeiro redirect que casar vence.
+# A API precisa vir ANTES do catch-all da SPA, senão /api/* cairia no
+# index.html e o site inteiro perderia o back-end.
+# ---------------------------------------------------------------------------
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+
+# Single-page app: qualquer outra rota cai no index.html (React Router assume)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ---------------------------------------------------------------------------
+# Cabeçalhos de segurança (aplicados pelo Netlify em todas as respostas).
+#
+# Notas sobre as escolhas:
+#  · script-src 'self' sem 'unsafe-inline': o build gera um único <script src>,
+#    então nenhum script inline é necessário. Esta é a diretiva que realmente
+#    barra XSS.
+#  · style-src mantém 'unsafe-inline' por margem de segurança. Hoje o CSS sai
+#    todo em arquivo e o React aplica estilo via CSSOM (que a CSP não bloqueia),
+#    mas qualquer <style> futuro quebraria a página sem isto. É a diretiva de
+#    menor risco para relaxar.
+#  · img-src data: cobre a textura de ruído embutida no CSS.
+#  · Não há chamada a domínio externo: nenhuma fonte, script ou API de fora.
+# ---------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), camera=(), microphone=(), payment=(), usb=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    Cross-Origin-Opener-Policy = "same-origin"
