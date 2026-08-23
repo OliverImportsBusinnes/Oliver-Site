@@ -11,6 +11,7 @@ import { requestsRepository } from './repositories/requests.js';
 import { messagesRepository } from './repositories/messages.js';
 import { attachmentsRepository } from './repositories/attachments.js';
 import { auditRepository, loginAttemptsRepository } from './repositories/audit.js';
+import { analyticsRepository } from './repositories/analytics.js';
 
 export function createContext(db) {
   return {
@@ -23,5 +24,6 @@ export function createContext(db) {
     attachments: attachmentsRepository(db),
     audit: auditRepository(db),
     loginAttempts: loginAttemptsRepository(db),
+    analytics: analyticsRepository(db),
   };
 }

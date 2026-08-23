@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './app/AuthContext.jsx';
 import ProtectedRoute from './app/ProtectedRoute.jsx';
 import MessageNotifier from './components/MessageNotifier.jsx';
+import CookieConsent from './components/CookieConsent.jsx';
 
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
@@ -24,8 +25,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        {/* Fora das rotas: o aviso aparece em qualquer página. */}
+        {/* Fora das rotas: os dois avisos aparecem em qualquer página. */}
         <MessageNotifier />
+        <CookieConsent />
 
         <Routes>
           {/* ---- Site público ---- */}

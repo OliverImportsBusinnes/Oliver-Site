@@ -1,6 +1,7 @@
 import Icon from '../components/Icon.jsx';
 import Logo from '../components/Logo.jsx';
 import AccountButton from '../components/AccountButton.jsx';
+import { openCookiePreferences } from '../components/CookieConsent.jsx';
 import {
   COMPANY_NAME,
   EMAIL,
@@ -61,6 +62,15 @@ export default function Footer() {
         <p>
           © {year} {COMPANY_NAME}. Todos os direitos reservados.
         </p>
+        {/* Quem já escolheu precisa poder mudar de ideia sem limpar o
+            navegador — é a metade do consentimento que costuma faltar. */}
+        <button
+          type="button"
+          className="footer__link footer__cookies"
+          onClick={openCookiePreferences}
+        >
+          Preferências de cookies
+        </button>
       </div>
     </footer>
   );

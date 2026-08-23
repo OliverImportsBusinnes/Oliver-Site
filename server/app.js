@@ -22,6 +22,7 @@ import { requestsService } from './services/requests.js';
 import { clientsService } from './services/clients.js';
 import { messagesService } from './services/messages.js';
 import { attachmentsService } from './services/attachments.js';
+import { analyticsService } from './services/analytics.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 
@@ -36,6 +37,7 @@ export function createApp(db, { allowedOrigins = [] } = {}) {
   const attachments = attachmentsService(ctx, requests);
   const messages = messagesService(ctx, requests, attachments);
   const clients = clientsService(ctx);
+  const analytics = analyticsService(ctx);
 
   const router = createRouter();
 
@@ -47,6 +49,39 @@ export function createApp(db, { allowedOrigins = [] } = {}) {
   }));
 
   router.get('/api/health', async () => ({ status: 200, body: { ok: true } }));
+
+  /* ------------------------------------------------------- visitas do site */
+
+  /* Chamada pelo navegador de quem aceitou os cookies. Pública de propósito:
+     visitante não tem sessão. O corpo é filtrado por `pick`, o consentimento é
+     conferido de novo no serviço e o endereço IP nunca é gravado. */
+  router.post('/api/analytics/visit', async ({ body, headers }) => {
+    const input = pick(body, [
+      'consent',
+      'path',
+      'referrer',
+      'visitorId',
+      'sessionId',
+      'utmSource',
+      'utmMedium',
+      'utmCampaign',
+      'utmTerm',
+      'utmContent',
+      'language',
+      'timezone',
+      'screenWidth',
+      'screenHeight',
+    ]);
+    return { status: 202, body: await analytics.record(input, headers) };
+  });
+
+  /* Leitura servidor-a-servidor: é assim que o painel desktop, através da API
+     de licenciamento, busca o relatório sem ter sessão de navegador aqui. A
+     chave fica só nos dois servidores, nunca no aplicativo instalado. */
+  router.get('/api/analytics/report', async ({ query, headers }) => {
+    analytics.assertReadKey(headers);
+    return { status: 200, body: await analytics.report({ days: query.days }) };
+  });
 
   /* --------------------------------------------------------- autenticação */
 
@@ -351,6 +386,24 @@ export function createApp(db, { allowedOrigins = [] } = {}) {
   );
 
   router.get(
+    '/api/admin/analytics',
+    async ({ query }) => ({
+      status: 200,
+      body: await analytics.report({ days: query.days }),
+    }),
+    adminOnly
+  );
+
+  router.get(
+    '/api/admin/analytics/recent',
+    async ({ query }) => ({
+      status: 200,
+      body: { visits: await ctx.analytics.recent(parsePagination(query)) },
+    }),
+    adminOnly
+  );
+
+  router.get(
     '/api/admin/audit',
     async ({ query }) => ({
       status: 200,
@@ -423,7 +476,7 @@ export function createApp(db, { allowedOrigins = [] } = {}) {
     }
   }
 
-  return { handle, ctx, services: { auth, projects, requests, messages } };
+  return { handle, ctx, services: { auth, projects, requests, messages, analytics } };
 }
 
 /* ------------------------------------------------------------- helpers */

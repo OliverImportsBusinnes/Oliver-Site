@@ -159,3 +159,44 @@ CREATE TABLE IF NOT EXISTS attachments (
 );
 
 CREATE INDEX IF NOT EXISTS ix_attachments_message ON attachments (message_id);
+
+-- ---------------------------------------------------------------------------
+-- site_visits -> uma linha por página aberta por quem aceitou os cookies.
+-- Sem consentimento, nada é gravado aqui (ver server/services/analytics.js).
+--
+-- O que NÃO fica guardado: endereço IP em claro, nome, e-mail ou qualquer
+-- identificador que ligue a linha a uma pessoa. `visitor_hash` é um número
+-- sorteado no navegador e `ip_hash` é um resumo com sal do servidor, usado
+-- apenas para separar visitantes distintos na mesma cidade.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_visits (
+  id            BIGSERIAL     NOT NULL,
+  visitor_hash  VARCHAR(64)   NOT NULL,
+  session_hash  VARCHAR(64)   NOT NULL,
+  path          VARCHAR(500)  NOT NULL,
+  referrer      VARCHAR(500)  NULL,
+  referrer_host VARCHAR(190)  NULL,
+  utm_source    VARCHAR(120)  NULL,
+  utm_medium    VARCHAR(120)  NULL,
+  utm_campaign  VARCHAR(120)  NULL,
+  utm_term      VARCHAR(120)  NULL,
+  utm_content   VARCHAR(120)  NULL,
+  country       VARCHAR(2)    NULL,
+  region        VARCHAR(80)   NULL,
+  city          VARCHAR(120)  NULL,
+  timezone      VARCHAR(60)   NULL,
+  edge_colo     VARCHAR(10)   NULL,
+  device        VARCHAR(20)   NULL,
+  browser       VARCHAR(40)   NULL,
+  os            VARCHAR(40)   NULL,
+  language      VARCHAR(20)   NULL,
+  screen_width  INTEGER       NULL,
+  screen_height INTEGER       NULL,
+  ip_hash       VARCHAR(64)   NULL,
+  created_at    BIGINT        NOT NULL,
+  CONSTRAINT pk_site_visits PRIMARY KEY (id)
+);
+
+CREATE INDEX IF NOT EXISTS ix_site_visits_created ON site_visits (created_at);
+CREATE INDEX IF NOT EXISTS ix_site_visits_visitor ON site_visits (visitor_hash, created_at);
+CREATE INDEX IF NOT EXISTS ix_site_visits_country ON site_visits (country, created_at);

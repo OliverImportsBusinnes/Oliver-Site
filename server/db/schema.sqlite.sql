@@ -120,3 +120,35 @@ CREATE TABLE IF NOT EXISTS attachments (
 );
 
 CREATE INDEX IF NOT EXISTS ix_attachments_message ON attachments (message_id);
+
+-- Visitas do site (ver o comentário equivalente no schema do PostgreSQL).
+CREATE TABLE IF NOT EXISTS site_visits (
+  id            INTEGER PRIMARY KEY AUTOINCREMENT,
+  visitor_hash  TEXT    NOT NULL,
+  session_hash  TEXT    NOT NULL,
+  path          TEXT    NOT NULL,
+  referrer      TEXT,
+  referrer_host TEXT,
+  utm_source    TEXT,
+  utm_medium    TEXT,
+  utm_campaign  TEXT,
+  utm_term      TEXT,
+  utm_content   TEXT,
+  country       TEXT,
+  region        TEXT,
+  city          TEXT,
+  timezone      TEXT,
+  edge_colo     TEXT,
+  device        TEXT,
+  browser       TEXT,
+  os            TEXT,
+  language      TEXT,
+  screen_width  INTEGER,
+  screen_height INTEGER,
+  ip_hash       TEXT,
+  created_at    INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS ix_site_visits_created ON site_visits (created_at);
+CREATE INDEX IF NOT EXISTS ix_site_visits_visitor ON site_visits (visitor_hash, created_at);
+CREATE INDEX IF NOT EXISTS ix_site_visits_country ON site_visits (country, created_at);

@@ -131,6 +131,23 @@ export const config = Object.freeze({
     email: readEnv('ADMIN_EMAIL'),
     password: readEnv('ADMIN_INITIAL_PASSWORD'),
   }),
+
+  analytics: Object.freeze({
+    /* Sal do resumo do IP. Sem valor próprio cai no segredo de sessão: o
+       importante é nunca gravar o endereço em claro. Trocar o sal reinicia a
+       contagem de visitantes únicos, e é essa a saída caso ele vaze. */
+    ipSalt: readEnv('ANALYTICS_IP_SALT') ?? readEnv('SESSION_SECRET'),
+
+    /* Chave que o painel administrativo apresenta em X-Analytics-Key para ler
+       o relatório sem sessão de navegador. Sem valor definido, a rota
+       servidor-a-servidor fica desligada e só o admin logado enxerga. */
+    readKey: readEnv('ANALYTICS_READ_KEY'),
+
+    /* Quanto tempo uma visita permanece guardada. Passado isso, a limpeza
+       apaga: dado de navegacao velho não serve para decidir nada e só aumenta
+       o que existe para vazar. */
+    retentionDays: Number(readEnv('ANALYTICS_RETENTION_DAYS', '400')),
+  }),
 });
 
 /**

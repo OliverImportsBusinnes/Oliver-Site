@@ -1462,3 +1462,12 @@
     font-size: 0.7rem;
   }
 }
+
+/* Botão com aparência de link no rodapé: reabre o aviso de cookies. */
+.footer__cookies {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
