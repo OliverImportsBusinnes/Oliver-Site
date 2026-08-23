@@ -630,6 +630,9 @@
 }
 
 .cookie-consent__list {
+  /* O reset da base zera o marcador de toda lista; aqui ele é a única coisa
+     que separa um item do outro no bloco de detalhes. */
+  list-style: disc;
   margin: 0.65rem 0 0;
   padding-left: 1.15rem;
   font-size: var(--fs-xs);
