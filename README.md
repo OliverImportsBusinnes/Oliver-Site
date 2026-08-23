@@ -152,11 +152,56 @@ progresso). Nada é enviado a servidor nenhum.
 
 ## Analytics
 
+### Eventos de interface
+
 Nenhuma ferramenta instalada e **nenhum dado sai do navegador**.
 `src/utils/analytics.js` dispara os eventos (`whatsapp_clicked`,
 `funnel_started`, `funnel_step_completed`, `hero_cta_click`,
 `project_viewed`, `solution_selected`) para `window.dataLayer`. Basta colar a
 tag do GTM/GA4 no `index.html` para começarem a ser coletados.
+
+### Origem das visitas (cookies)
+
+Isto é próprio, roda no nosso servidor e não usa serviço de terceiro.
+
+**Só grava quem aceitou.** O aviso aparece no rodapé da tela na primeira
+visita. Enquanto ninguém escolhe, nada sai do navegador. "Recusar" mantém tudo
+desligado e apaga o identificador guardado. O link "Preferências de cookies",
+no rodapé do site, reabre a escolha depois.
+
+O que é gravado a cada página aberta, em `site_visits`:
+
+| Coluna | De onde vem |
+|---|---|
+| `country`, `region`, `city` | Cabeçalhos da borda: Cloudflare (`CF-IPCountry`, `CF-IPCity`, `CF-Region`), Netlify (`x-nf-geo`) ou Vercel — nessa ordem |
+| `edge_colo` | Sufixo do `CF-Ray` (`…-GRU` = São Paulo) |
+| `referrer`, `referrer_host` | De onde veio o clique |
+| `utm_*` | Parâmetros de campanha do link |
+| `device`, `browser`, `os` | Leitura simples do User-Agent |
+| `path`, `language`, `screen_*` | Página aberta e o básico do navegador |
+| `visitor_hash`, `session_hash` | Resumo de um número sorteado no navegador |
+| `ip_hash` | Resumo do IP com sal do servidor |
+
+**O que não é gravado:** endereço IP em claro, nome, e-mail ou qualquer ligação
+com a conta da área do cliente. A querystring é descartada do caminho, porque é
+onde dado pessoal costuma aparecer colado por engano.
+
+Ler o relatório:
+
+```text
+GET /api/admin/analytics?days=30          # administrador logado no site
+GET /api/admin/analytics/recent?limit=20  # últimas visitas, para conferir a coleta
+GET /api/analytics/report?days=30         # servidor-a-servidor, com X-Analytics-Key
+```
+
+A terceira é como o **Panel Desktop** chega aqui: a API de licenciamento
+apresenta a chave e repassa o relatório ao painel, que se autentica com a
+própria sessão de administrador. A chave nunca vai para o aplicativo instalado.
+Sem `ANALYTICS_READ_KEY` definida, essa rota fica fechada.
+
+Configuração em `.env` (nada é obrigatório):
+`ANALYTICS_IP_SALT`, `ANALYTICS_READ_KEY`, `ANALYTICS_RETENTION_DAYS`
+(padrão 400 dias — a limpeza roda junto do relatório).
 
 ---
 
