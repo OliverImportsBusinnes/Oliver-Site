@@ -26,6 +26,14 @@ export default function CookieConsent() {
   const [open, setOpen] = useState(() => readConsent() === null);
   const [details, setDetails] = useState(false);
 
+  /* O botão flutuante do WhatsApp também mora no canto inferior direito.
+     Sem isso, em telas estreitas o balão fica em cima do botão "Aceitar" —
+     visível e clicável por engano no lugar errado. */
+  useEffect(() => {
+    document.body.classList.toggle('cookie-consent-open', open);
+    return () => document.body.classList.remove('cookie-consent-open');
+  }, [open]);
+
   /* Cada troca de página conta como uma visita, mas só depois do "Aceitar". */
   useEffect(() => {
     if (status !== CONSENT.GRANTED) return;

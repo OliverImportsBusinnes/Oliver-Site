@@ -453,6 +453,16 @@
   pointer-events: auto;
 }
 
+/* O aviso de cookies também fica preso ao rodapé; sem isto o balão do
+   WhatsApp aparece por cima dele em telas estreitas, tampando o botão
+   "Aceitar". Especificidade maior que .is-visible de propósito, para
+   vencer independente da ordem no arquivo. */
+body.cookie-consent-open .floating-wa.is-visible {
+  opacity: 0;
+  transform: translateY(16px) scale(0.9);
+  pointer-events: none;
+}
+
 .floating-wa:hover {
   background: var(--green-400);
 }
