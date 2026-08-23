@@ -184,6 +184,29 @@ test('leitura servidor-a-servidor exige a chave configurada', async (t) => {
   assert.equal(chaveQualquer.status, 403);
 });
 
+test('gerar o relatório também aplica a retenção', async (t) => {
+  const { app, ctx, close } = await createTestApp();
+  t.after(close);
+
+  await request(app, 'POST', '/api/analytics/visit', {
+    body: VISITA,
+    headers: CABECALHOS_CLOUDFLARE,
+  });
+  /* Uma visita de dois anos atrás, além dos 400 dias de retenção padrão. */
+  await ctx.db.execute('UPDATE site_visits SET created_at = ?', [
+    Date.now() - 730 * 86400000,
+  ]);
+
+  const admin = await createAdmin(ctx, app);
+  const response = await request(app, 'GET', '/api/admin/analytics', {
+    token: admin.token,
+  });
+
+  assert.equal(response.status, 200);
+  const total = await ctx.db.queryOne('SELECT COUNT(*) AS total FROM site_visits');
+  assert.equal(Number(total.total), 0);
+});
+
 test('a limpeza descarta visitas fora da retenção', async (t) => {
   const { app, ctx, close } = await createTestApp();
   t.after(close);

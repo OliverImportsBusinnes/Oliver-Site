@@ -27,6 +27,14 @@ const MAX_REPORT_DAYS = 400;
 const RANKING_LIMIT = 12;
 
 export function analyticsService(ctx) {
+  /** Descarta visitas antigas conforme a retenção configurada. */
+  async function purge(now = Date.now()) {
+    const days = Number.isFinite(config.analytics.retentionDays)
+      ? config.analytics.retentionDays
+      : 400;
+    await ctx.analytics.deleteOlderThan(now - Math.max(days, 1) * DAY_MS);
+  }
+
   return {
     /**
      * Registra uma página aberta. Devolve `{ recorded: false }` quando não há
@@ -92,6 +100,16 @@ export function analyticsService(ctx) {
       const until = Date.now();
       const since = until - window * DAY_MS;
 
+      /* Aproveita a visita do administrador para aplicar a retenção, no mesmo
+         espírito da limpeza de sessões vencidas no login: é um DELETE indexado,
+         acontece raramente e evita depender de um agendador que este projeto
+         não tem. Falhar aqui não pode esconder o relatório. */
+      try {
+        await purge(until);
+      } catch (error) {
+        console.error('[analytics] limpeza de visitas antigas falhou:', error?.message);
+      }
+
       const [totals, daily] = await Promise.all([
         ctx.analytics.totals({ since, until }),
         ctx.analytics.daily({ since, until }),
@@ -127,13 +145,7 @@ export function analyticsService(ctx) {
       }
     },
 
-    /** Descarta visitas antigas conforme a retenção configurada. */
-    async purge(now = Date.now()) {
-      const days = Number.isFinite(config.analytics.retentionDays)
-        ? config.analytics.retentionDays
-        : 400;
-      await ctx.analytics.deleteOlderThan(now - Math.max(days, 1) * DAY_MS);
-    },
+    purge,
   };
 }
 
