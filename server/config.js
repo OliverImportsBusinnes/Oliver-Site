@@ -131,6 +131,20 @@ export const config = Object.freeze({
     email: readEnv('ADMIN_EMAIL'),
     password: readEnv('ADMIN_INITIAL_PASSWORD'),
   }),
+
+  /* Oliver Licensing — a API central. Os orçamentos pedidos aqui não ficam no
+     banco do site: são gravados lá, onde o Panel Desktop os lê. A chave é de
+     serviço (não é sessão de administrador) e nunca chega ao navegador: quem
+     chama é este servidor. */
+  licensing: Object.freeze({
+    baseUrl: readEnv('LICENSING_API_BASE_URL'),
+    serviceKey: readEnv('SITE_SERVICE_API_KEY'),
+
+    /* O plano gratuito do Render hiberna: o primeiro pedido depois da
+       inatividade acorda o serviço e demora. Abaixo disso, um orçamento
+       legítimo viraria erro só porque a API estava dormindo. */
+    timeoutMs: Number(readEnv('LICENSING_API_TIMEOUT_MS', '90000')),
+  }),
 });
 
 /**
@@ -145,6 +159,15 @@ export function assertProductionConfig() {
   }
 
   if (!config.sessionSecret) missing.push('SESSION_SECRET');
+
+  /* As duas andam juntas: uma sozinha significa integração pela metade, e o
+     formulário de orçamento falharia só em produção, na frente do visitante. */
+  if (config.licensing.baseUrl && !config.licensing.serviceKey) {
+    missing.push('SITE_SERVICE_API_KEY');
+  }
+  if (config.licensing.serviceKey && !config.licensing.baseUrl) {
+    missing.push('LICENSING_API_BASE_URL');
+  }
 
   if (missing.length) {
     throw new Error(

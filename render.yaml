@@ -66,6 +66,17 @@ services:
       - key: VITE_COMPANY_EMAIL
         sync: false
 
+      # Endereço da API Oliver Licensing. Os pedidos de orçamento feitos aqui
+      # são gravados lá, não no banco deste serviço.
+      - key: LICENSING_API_BASE_URL
+        sync: false
+
+      # A MESMA string configurada como SITE_SERVICE_API_KEY no serviço da API
+      # de licenciamento — as duas pontas comparam o mesmo valor. Preencher só
+      # uma das duas variáveis de licenciamento derruba o start, de propósito.
+      - key: SITE_SERVICE_API_KEY
+        sync: false
+
       # Endereço público usado em canonical, Open Graph e Twitter Card. É lido
       # no BUILD (o Vite carimba o valor no index.html), então mudá-lo exige um
       # novo deploy para valer. Em branco, cai na URL .onrender.com deste

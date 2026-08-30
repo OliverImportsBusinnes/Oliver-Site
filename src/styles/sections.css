@@ -1207,6 +1207,25 @@
   margin-top: 1.75rem;
 }
 
+/* Fora da grade de duas colunas acima, ocupando a largura toda: o formulário
+   tem seis campos e ficaria espremido em meia coluna. */
+.contact__quote {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--border);
+}
+
+.contact__quote-title {
+  font-size: var(--fs-lead);
+}
+
+.contact__quote-text {
+  margin: 0.7rem 0 1.5rem;
+  max-width: 34rem;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
 .channel {
   display: flex;
   align-items: center;

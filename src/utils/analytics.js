@@ -16,6 +16,7 @@ export const EVENTS = {
   FUNNEL_STARTED: 'funnel_started',
   FUNNEL_STEP_COMPLETED: 'funnel_step_completed',
   WHATSAPP_CLICKED: 'whatsapp_clicked',
+  QUOTE_REQUEST_SENT: 'quote_request_sent',
 };
 
 export function track(event, payload = {}) {

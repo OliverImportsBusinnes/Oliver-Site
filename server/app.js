@@ -22,13 +22,22 @@ import { requestsService } from './services/requests.js';
 import { clientsService } from './services/clients.js';
 import { messagesService } from './services/messages.js';
 import { attachmentsService } from './services/attachments.js';
+import { quoteRequestsService } from './services/quoteRequests.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 
 /** Métodos que alteram estado — só eles precisam de checagem de origem. */
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-export function createApp(db, { allowedOrigins = [] } = {}) {
+/**
+ * `quoteRequests` entra por parâmetro para os testes poderem trocar o `fetch`
+ * que fala com a API de licenciamento — sem isso, testar o formulário de
+ * orçamento exigiria rede de verdade.
+ */
+export function createApp(
+  db,
+  { allowedOrigins = [], quoteRequests = quoteRequestsService() } = {}
+) {
   const ctx = createContext(db);
   const auth = authService(ctx);
   const projects = projectsService(ctx);
@@ -47,6 +56,26 @@ export function createApp(db, { allowedOrigins = [] } = {}) {
   }));
 
   router.get('/api/health', async () => ({ status: 200, body: { ok: true } }));
+
+  /* Orçamento pedido por visitante, sem conta. Não grava no banco daqui: vai
+     para a API Oliver Licensing, onde o Panel Desktop lê. `pick` mantém a
+     mesma regra das outras rotas — mandar `status` ou `customerId` junto não
+     tem efeito, e quem chega pelo formulário não escolhe a situação do próprio
+     pedido. */
+  router.post('/api/quote-requests', async ({ body, headers }) => {
+    const input = pick(body, [
+      'requesterName',
+      'requesterEmail',
+      'requesterPhone',
+      'company',
+      'subject',
+      'description',
+    ]);
+    const created = await quoteRequests.create(input, {
+      clientKey: clientAddress(headers),
+    });
+    return { status: 201, body: { quoteRequest: created } };
+  });
 
   /* --------------------------------------------------------- autenticação */
 
@@ -432,6 +461,23 @@ function requireId(raw) {
   const id = toId(raw);
   if (!id) throw badRequest('Identificador inválido.');
   return id;
+}
+
+/**
+ * Endereço do visitante, para contar pedidos por pessoa e não por servidor.
+ * O Render põe a cadeia de proxies em `x-forwarded-for`, e o primeiro item é o
+ * cliente. Sem proxy o cabeçalho não existe e todo mundo cai na mesma chave —
+ * aceitável, porque fora do Render isto está em desenvolvimento.
+ *
+ * Não serve para autorizar nada: o cabeçalho é forjável por quem fala direto
+ * com o processo. Aqui ele só reparte uma cota.
+ */
+function clientAddress(headers) {
+  const forwarded = headers?.['x-forwarded-for'];
+  if (typeof forwarded === 'string' && forwarded.trim()) {
+    return forwarded.split(',')[0].trim();
+  }
+  return 'desconhecido';
 }
 
 function normalizeHeaders(headers = {}) {

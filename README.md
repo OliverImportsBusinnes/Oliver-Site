@@ -42,6 +42,13 @@ Depois entre em `/login` com esse identificador. Para **zerar o banco local**
 e começar do zero: apague `server/data/oliver.db` e rode `npm run db:migrate`
 e `npm run db:seed-admin` de novo.
 
+Para zerar **sem apagar o arquivo** — ou para zerar o Postgres do Neon, onde
+não existe arquivo para apagar — os scripts `server/db/reset.sqlite.sql` e
+`server/db/reset.postgres.sql` derrubam as 9 tabelas com `DROP TABLE`, na
+ordem que respeita as chaves estrangeiras. Cole o arquivo inteiro no cliente
+SQL (o console do Neon, para o Postgres) e rode `npm run db:migrate` (e
+`npm run db:seed-admin`, se quiser) depois, para recriar tudo vazio.
+
 ---
 
 ## ⚙️ Onde estão os meus dados
@@ -244,6 +251,8 @@ Em *Environment → Environment Variables*:
 | `VITE_COMPANY_EMAIL` | seu e-mail de contato |
 | `VITE_SITE_URL` | endereço público, sem barra final (opcional no início) |
 | `ALLOWED_ORIGINS` | opcional — veja abaixo |
+| `LICENSING_API_BASE_URL` | endereço da API Oliver Licensing |
+| `SITE_SERVICE_API_KEY` | credencial de serviço — a mesma dos dois lados |
 
 Gerar o `SESSION_SECRET`:
 
@@ -306,6 +315,63 @@ próprio, o roteiro é o mesmo — mais `ALLOWED_ORIGINS` com apex e www.
 
 ---
 
+## E a Vercel?
+
+**Este projeto não roda inteiro na Vercel do jeito que está**, e é melhor saber
+disso antes de importar do que depois de ver o `/login` responder 404.
+
+O motivo é a forma do projeto, não uma limitação da Vercel: `server.js` é um
+processo Node **de vida longa** (`createServer().listen()`) que serve o site e
+a API na mesma origem. A Vercel não mantém processo ligado — ela publica
+arquivos estáticos e funções serverless, e nunca executa `npm start`. Nada em
+`server.js` está escrito como função serverless, não existe pasta `api/` no
+formato que ela procura, e não existe `vercel.json`.
+
+Importando o repositório com as opções padrão, o que sobe é **só a metade
+estática**:
+
+| Campo da tela de import | Valor |
+|---|---|
+| Root Directory | `./` (a raiz — `package.json`, `index.html` e `vite.config.js` estão lá) |
+| Framework Preset | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
+
+Com isso a home aparece bonita e **tudo que depende de `/api/*` quebra**:
+login, cadastro, painel do cliente, painel administrativo e o formulário de
+orçamento. As variáveis de banco e de sessão ficariam cadastradas sem ninguém
+para lê-las — não existe processo Node no ar. E o `SQLITE_FILE` não teria como
+funcionar de qualquer forma: o disco da Vercel é somente leitura fora de
+`/tmp`, e cada invocação começa do zero.
+
+Há dois caminhos honestos:
+
+**Continuar no Render (recomendado).** É para onde o `render.yaml` deste
+repositório aponta, com o roteiro completo logo acima. Um serviço só, mesma
+origem, cookie `SameSite=Lax` funcionando, `npm start` de verdade. Nada a
+reescrever.
+
+**Ir para a Vercel.** Aí é trabalho de código, não de configuração: criar
+`api/index.js` exportando um handler `(req, res)` que chame `app.handle(...)`
+de `server/app.js`, um `vercel.json` mandando `/api/(.*)` para essa função e o
+resto para o `dist/`, e trocar o driver para `postgres` — `sqlite` deixa de ser
+opção. O `RENDER_EXTERNAL_URL` também some, então `ALLOWED_ORIGINS` passa a ser
+obrigatória com a URL da Vercel dentro.
+
+> Antes de qualquer import: a integração com a Oliver Licensing
+> (`LICENSING_API_BASE_URL`, `SITE_SERVICE_API_KEY`, `QuoteForm.jsx`,
+> `server/services/quoteRequests.js`) ainda **não está no GitHub**. Um deploy
+> feito agora publica o site sem o formulário de orçamento — e é por isso que a
+> tela de import da Vercel detecta 10 variáveis em vez das 13 do
+> `.env.example` atual.
+
+Dois modelos prontos ficam na raiz, os dois cobertos pelo `.gitignore`:
+`.env` para rodar na sua máquina e `.env.deploy` para importar no painel do
+serviço.
+
+---
+
 ## Segurança
 
 Esta seção cobre o **front**; as defesas do back-end estão em
@@ -358,7 +424,15 @@ lidas em `server/config.js`. Veja o `.env.example`.
 
 ```
 Navegador  →  Node no Render (site + /api)  →  PostgreSQL no Neon
+                                            └→  API Oliver Licensing (orçamentos)
 ```
+
+**Pedidos de orçamento não ficam neste banco.** São encaminhados à API Oliver
+Licensing, que é onde o Panel Desktop os lê e responde. O navegador nunca fala
+com ela: quem chama é o `server.js`, com uma credencial de serviço que dá acesso
+apenas a criar solicitação — não abre o painel. Sem `LICENSING_API_BASE_URL` e
+`SITE_SERVICE_API_KEY` o formulário responde "indisponível" em vez de perder o
+pedido em silêncio.
 
 O navegador **nunca** fala com o banco. As credenciais existem apenas em
 variáveis de ambiente do servidor.
@@ -418,6 +492,7 @@ Com chaves estrangeiras, `ON DELETE CASCADE`, `UNIQUE` em e-mail e slug,
 | Método | Rota | Acesso |
 |---|---|---|
 | GET | `/api/projects` | público |
+| POST | `/api/quote-requests` | público (sem conta) |
 | POST | `/api/auth/register` `/api/auth/login` | público |
 | POST | `/api/auth/logout` · GET `/api/auth/me` | autenticado |
 | GET | `/api/me/summary` `/api/me/projects` `/api/me/requests` | cliente |
@@ -475,7 +550,7 @@ npm test              # tudo
 npm run test:server   # só o back-end
 ```
 
-**113 testes**, sem nenhuma dependência de teste — runner nativo do Node,
+**125 testes**, sem nenhuma dependência de teste — runner nativo do Node,
 rodando contra um SQLite **em memória** com o schema real:
 
 - **Front** (24): validação de URL, funil, links de contato, datas do chat.
@@ -488,6 +563,9 @@ rodando contra um SQLite **em memória** com o schema real:
   (idempotente), mensagens e permissões de leitura.
 - **Uploads** (14): tipo real do arquivo, limite de tamanho, base64 inválido,
   IDOR no download, exclusão em cascata do anexo.
+- **Orçamentos** (12): encaminhamento à API de licenciamento, montagem da URL,
+  validação sem gastar chamada, mass assignment, limite por visitante, API
+  central fora do ar e erro que não pode vazar para o navegador.
 - **Fluxo** (4): jornada completa cadastro → solicitação → conversa → status,
   CRUD de projeto refletindo no site, slug duplicado, resumo do admin.
 - **Banco e rotas** (20): tabelas, índices, `UNIQUE`, `CHECK`, FK, cascata,

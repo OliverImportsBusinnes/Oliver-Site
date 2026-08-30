@@ -1,6 +1,7 @@
 import Icon from '../components/Icon.jsx';
 import Reveal from '../components/Reveal.jsx';
 import Funnel from '../components/Funnel.jsx';
+import QuoteForm from '../components/QuoteForm.jsx';
 import { EMAIL, WHATSAPP_MESSAGES } from '../data/company.js';
 import {
   createMailtoLink,
@@ -80,6 +81,19 @@ export default function Contact() {
             <Funnel />
           </Reveal>
         </div>
+
+        {/* Caminho formal, para quem prefere deixar o pedido registrado em vez
+            de abrir conversa. O funil acima leva ao WhatsApp; este pedido entra
+            no painel da Oliver com histórico e resposta. */}
+        <Reveal delay={120} className="contact__quote">
+          <h3 className="contact__quote-title">Prefere pedir um orçamento?</h3>
+          <p className="contact__quote-text">
+            Conte o que precisa e respondemos pelo e-mail informado. Não é
+            preciso criar conta.
+          </p>
+
+          <QuoteForm />
+        </Reveal>
       </div>
     </section>
   );
