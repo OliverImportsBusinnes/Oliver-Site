@@ -575,3 +575,11 @@ rodando contra um SQLite **em memória** com o schema real:
 Os testes foram validados por **mutação**: desliguei a checagem de papel e a
 proteção de IDOR de propósito e confirmei que os testes correspondentes
 falham. Teste que não quebra quando a proteção some não está testando nada.
+## Mapa do código (graphify)
+
+`graphify update .` na raiz gera, em `graphify-out/`, o grafo de dependências do
+código (`graph.json`), a visualização interativa (`graph.html`) e o resumo
+`GRAPH_REPORT.md` com os pontos mais conectados. A extração é estrutural, sem IA
+e sem chave de API. A pasta é local e fica fora do Git (`.gitignore`); rode de
+novo depois de mudanças grandes. Arquivos `.sql` só entram com o pacote opcional
+`graphifyy[sql]`.

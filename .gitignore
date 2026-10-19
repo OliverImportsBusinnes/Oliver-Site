@@ -13,3 +13,6 @@ server/data/
 
 # Preferências locais do Claude Code (valem só nesta máquina)
 .claude/settings.local.json
+
+# Mapa do codigo gerado pelo graphify (local, nao versionado)
+graphify-out/
