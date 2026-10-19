@@ -23,6 +23,7 @@ import { clientsService } from './services/clients.js';
 import { messagesService } from './services/messages.js';
 import { attachmentsService } from './services/attachments.js';
 import { quoteRequestsService } from './services/quoteRequests.js';
+import { checkoutService } from './services/checkout.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 
@@ -36,7 +37,11 @@ const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
  */
 export function createApp(
   db,
-  { allowedOrigins = [], quoteRequests = quoteRequestsService() } = {}
+  {
+    allowedOrigins = [],
+    quoteRequests = quoteRequestsService(),
+    checkout = checkoutService(),
+  } = {}
 ) {
   const ctx = createContext(db);
   const auth = authService(ctx);
@@ -75,6 +80,27 @@ export function createApp(
       clientKey: clientAddress(headers),
     });
     return { status: 201, body: { quoteRequest: created } };
+  });
+
+  /* Compra do sistema. Também sem conta: quem compra ainda não é cliente. O
+     pedido vai para a API de licenciamento, que cria o cliente e o link de
+     pagamento; a licença só sai depois do pagamento confirmado lá. `pick`
+     limita o que entra: `price`, `plan` ou `customerId` no corpo não têm
+     efeito, e o preço é calculado do outro lado. */
+  router.post('/api/checkout', async ({ body, headers }) => {
+    const input = pick(body, [
+      'companyName',
+      'contactName',
+      'taxId',
+      'email',
+      'phone',
+      'devices',
+      'acceptTerms',
+    ]);
+    const result = await checkout.create(input, {
+      clientKey: clientAddress(headers),
+    });
+    return { status: 200, body: result };
   });
 
   /* --------------------------------------------------------- autenticação */

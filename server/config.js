@@ -132,6 +132,12 @@ export const config = Object.freeze({
     password: readEnv('ADMIN_INITIAL_PASSWORD'),
   }),
 
+  /* Endereço público do site, com https. A compra o usa para dizer ao
+     Mercado Pago para onde levar o cliente depois de pagar (/obrigado). */
+  site: Object.freeze({
+    publicUrl: readEnv('SITE_PUBLIC_URL'),
+  }),
+
   /* Oliver Licensing — a API central. Os orçamentos pedidos aqui não ficam no
      banco do site: são gravados lá, onde o Panel Desktop os lê. A chave é de
      serviço (não é sessão de administrador) e nunca chega ao navegador: quem
