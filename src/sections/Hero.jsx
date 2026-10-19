@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
+import { PRODUCT } from '../data/product.js';
 import AppMockup from '../components/AppMockup.jsx';
 import { COMPANY_NAME, WHATSAPP_MESSAGES } from '../data/company.js';
 import { createWhatsAppLink, whatsappLinkProps } from '../utils/contact.js';
@@ -26,24 +28,33 @@ export default function Hero() {
           </p>
 
           <h1 className="hero__title">
-            Software criado para o jeito que{' '}
-            <span className="hero__title-accent">seu negócio funciona</span>.
+            Estoque e caixa da sua loja{' '}
+            <span className="hero__title-accent">sem complicação</span>.
           </h1>
 
           <p className="hero__text">
-            Sistemas de gestão, aplicações web e automações desenvolvidos sob
-            medida — do primeiro levantamento até o sistema rodando.
+            O {PRODUCT.name} controla estoque, comandas, caixa e resultado da
+            loja num só sistema para Windows. Compre pelo site e comece a
+            vender no mesmo dia.
           </p>
 
           <div className="hero__actions">
-            <a
+            <Link
               className="btn btn--primary"
-              href="#projetos"
+              to="/comprar"
               ref={ctaRef}
-              onClick={() => track(EVENTS.HERO_CTA_CLICK, { cta: 'projetos' })}
+              onClick={() => track(EVENTS.HERO_CTA_CLICK, { cta: 'comprar' })}
             >
-              Conhecer projetos
-              <Icon name="arrowDown" size={17} className="btn__icon" />
+              Comprar agora
+              <Icon name="arrowRight" size={17} className="btn__icon" />
+            </Link>
+
+            <a
+              className="btn btn--ghost"
+              href="#sistema"
+              onClick={() => track(EVENTS.HERO_CTA_CLICK, { cta: 'sistema' })}
+            >
+              Conhecer o sistema
             </a>
 
             <a
@@ -56,7 +67,7 @@ export default function Hero() {
               {...whatsappLinkProps}
             >
               <Icon name="whatsapp" size={17} />
-              Falar conosco
+              Tirar dúvidas
             </a>
           </div>
         </div>

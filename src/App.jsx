@@ -18,6 +18,11 @@ import AdminClientDetail from './pages/admin/ClientDetail.jsx';
 import AdminRequests from './pages/admin/Requests.jsx';
 import Messages from './pages/Messages.jsx';
 import ClientAreaInfo from './pages/ClientAreaInfo.jsx';
+import Buy from './pages/Buy.jsx';
+import ThankYou from './pages/ThankYou.jsx';
+import Download from './pages/Download.jsx';
+import Terms from './pages/Terms.jsx';
+import Privacy from './pages/Privacy.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
@@ -30,6 +35,11 @@ export default function App() {
         <Routes>
           {/* ---- Site público ---- */}
           <Route path="/" element={<Home />} />
+          <Route path="/comprar" element={<Buy />} />
+          <Route path="/obrigado" element={<ThankYou />} />
+          <Route path="/baixar" element={<Download />} />
+          <Route path="/termos" element={<Terms />} />
+          <Route path="/privacidade" element={<Privacy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Register />} />
           <Route path="/area-do-cliente" element={<ClientAreaInfo />} />

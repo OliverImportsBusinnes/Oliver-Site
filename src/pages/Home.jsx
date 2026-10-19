@@ -1,5 +1,7 @@
 import Header from '../sections/Header.jsx';
 import Hero from '../sections/Hero.jsx';
+import Product from '../sections/Product.jsx';
+import Pricing from '../sections/Pricing.jsx';
 import Projects from '../sections/Projects.jsx';
 import Capabilities from '../sections/Capabilities.jsx';
 import Process from '../sections/Process.jsx';
@@ -19,9 +21,11 @@ export default function Home() {
 
       <Header />
 
-      {/* Ordem = funil: descoberta → prova → oferta → conversa */}
+      {/* Ordem = funil: produto → preço → serviços sob medida → conversa */}
       <main id="conteudo">
         <Hero />
+        <Product />
+        <Pricing />
         <Projects />
         <Capabilities />
         <Process />

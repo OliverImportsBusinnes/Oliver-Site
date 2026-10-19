@@ -14,8 +14,10 @@ COPY . .
 # Por isso entram na hora do build e mudá-los exige reconstruir a imagem.
 ARG VITE_SITE_URL=""
 ARG VITE_COMPANY_EMAIL=""
+ARG VITE_INSTALLER_URL=""
 ENV VITE_SITE_URL=$VITE_SITE_URL \
-    VITE_COMPANY_EMAIL=$VITE_COMPANY_EMAIL
+    VITE_COMPANY_EMAIL=$VITE_COMPANY_EMAIL \
+    VITE_INSTALLER_URL=$VITE_INSTALLER_URL
 RUN npm run build
 
 FROM node:22-bookworm-slim

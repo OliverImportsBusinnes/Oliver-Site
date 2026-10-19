@@ -7,6 +7,7 @@ import './styles/components.css';
 import './styles/sections.css';
 import './styles/overlays.css';
 import './styles/panel.css';
+import './styles/store.css';
 
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';

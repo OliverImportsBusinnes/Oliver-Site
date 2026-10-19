@@ -50,8 +50,8 @@ export const WHATSAPP_MESSAGES = {
 /** Itens do menu de navegação (usados no header e no footer). */
 export const NAV_LINKS = [
   { label: 'Início', href: '#inicio' },
-  { label: 'Projetos', href: '#projetos' },
-  { label: 'Soluções', href: '#solucoes' },
-  { label: 'Clientes', href: '#clientes' },
+  { label: 'Sistema', href: '#sistema' },
+  { label: 'Preço', href: '#preco' },
+  { label: 'Sob medida', href: '#projetos' },
   { label: 'Contato', href: '#contato' },
 ];

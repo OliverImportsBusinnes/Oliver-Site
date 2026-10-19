@@ -18,10 +18,10 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 
   O plano completo está em `Panel-Desktop/docs/PLANO_LANCAMENTO.html`, nas fases F3, F4 e F5.
 
-  **Andamento (19/10/2026):** o servidor já tem o checkout (`POST /api/checkout`, plano e CPF/CNPJ validados, 147 testes).
-  Falta toda a interface: início do produto, `/comprar`, `/obrigado`, `/baixar`, `/termos`, `/privacidade` e a área do
-  cliente. Depende da permissão do usuário para rodar `npm ci` (o projeto não tem `node_modules`) e dos textos legais
-  serem revistos pelo dono.
+  **Andamento (19/10/2026):** o servidor tem o checkout e a interface existe: início do produto, preço, `/comprar`,
+  `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). Faltam a área do cliente com a licença
+  e os downloads (P-009) e a prova da compra de ponta a ponta com o Mercado Pago (P-005 e `docs/COMPRA_AUTOMATICA.md`).
+
 - **P-002** · 2026-10-19 · **A fonte Inter nunca carrega.** O motivo está em dois arquivos:
   - `src/styles/tokens.css` declara `"Inter"`, mas não há `@font-face` nem arquivo de fonte no projeto;
   - o CSP de `server.js` só permite `font-src 'self'`.
@@ -37,6 +37,19 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 - **P-005** · 2026-10-19 · **O formulário de orçamento nunca foi provado de ponta a ponta.** O teste completo é:
   pedido enviado pelo site → `201` da API de licenças → pedido visível na tela Orçamentos do painel. Esse teste é a
   fase 1 de `Panel-Desktop/docs/CRONOGRAMA.md` e não tem registro de execução.
+
+- **P-006** · 2026-10-19 · **Termos e privacidade sem revisão jurídica e sem dados da empresa.** `/termos` e `/privacidade` foram
+  escritos a partir do que o sistema faz, mas faltam razão social, CNPJ e endereço, o foro, a regra do período já pago em
+  caso de cancelamento (hoje o texto só diz que o cancelamento interrompe as próximas cobranças) e o prazo de guarda de
+  dados. Um advogado precisa revisar antes do lançamento.
+- **P-007** · 2026-10-19 · **O mockup da home mostra "MySQL" e dados de exemplo.** `src/components/AppMockup.jsx` é decorativo e
+  cita MySQL, enquanto as lojas novas rodam em PostgreSQL. Trocar por capturas reais do sistema (dependem da F5, redesenho).
+- **P-008** · 2026-10-19 · **Todas as páginas têm o mesmo título e a mesma descrição.** `index.html` fixa o `<title>` do portfólio;
+  `/comprar`, `/baixar`, `/termos` e `/privacidade` deveriam ter título próprio, e o texto de SEO da home ainda fala de
+  desenvolvimento de software sob medida.
+- **P-009** · 2026-10-19 · **Falta a área do cliente comprador.** Depois da compra o cliente não vê licença, computadores
+  ativados, próximo vencimento nem baixa o instalador por uma área logada; hoje só recebe o e-mail. Depende de a API expor
+  esses dados ao site.
 
 ## Resolvidas
 

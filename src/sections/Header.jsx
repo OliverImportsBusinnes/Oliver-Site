@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import Logo from '../components/Logo.jsx';
 import AccountButton from '../components/AccountButton.jsx';
@@ -83,6 +84,9 @@ export default function Header() {
 
         <div className="header__actions">
           <AccountButton className="header__cta" />
+          <Link className="btn btn--primary btn--sm header__buy" to="/comprar">
+            Comprar
+          </Link>
 
           <button
             type="button"
@@ -124,13 +128,21 @@ export default function Header() {
           </ul>
 
           <div className="mobile-menu__actions">
+            <Link
+              className="btn btn--primary btn--block"
+              to="/comprar"
+              onClick={() => setOpen(false)}
+            >
+              Comprar o sistema
+            </Link>
+
             <AccountButton
               className="btn--block"
               onNavigate={() => setOpen(false)}
             />
 
             <a
-              className="btn btn--primary btn--block"
+              className="btn btn--ghost btn--block"
               href={whatsappHref}
               onClick={() => setOpen(false)}
               {...whatsappLinkProps}
