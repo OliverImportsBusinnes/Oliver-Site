@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.env
+.env.*
+!.env.example
+server/data
+*.db
+*.sqlite
+graphify-out
+tests
+docs
+netlify
+.claude

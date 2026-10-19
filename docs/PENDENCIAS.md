@@ -16,8 +16,12 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   - compra automática pelo Mercado Pago;
   - hospedagem numa VPS da Hostinger.
 
-  O plano completo está em `Panel-Desktop/docs/PLANO_LANCAMENTO.html`, nas fases F3, F4 e F5. Nada foi feito ainda,
-  porque esta entrega era só o plano.
+  O plano completo está em `Panel-Desktop/docs/PLANO_LANCAMENTO.html`, nas fases F3, F4 e F5.
+
+  **Andamento (19/10/2026):** o servidor já tem o checkout (`POST /api/checkout`, plano e CPF/CNPJ validados, 147 testes).
+  Falta toda a interface: início do produto, `/comprar`, `/obrigado`, `/baixar`, `/termos`, `/privacidade` e a área do
+  cliente. Depende da permissão do usuário para rodar `npm ci` (o projeto não tem `node_modules`) e dos textos legais
+  serem revistos pelo dono.
 - **P-002** · 2026-10-19 · **A fonte Inter nunca carrega.** O motivo está em dois arquivos:
   - `src/styles/tokens.css` declara `"Inter"`, mas não há `@font-face` nem arquivo de fonte no projeto;
   - o CSP de `server.js` só permite `font-src 'self'`.
