@@ -98,7 +98,7 @@ export default function AppMockup() {
           <Icon name="database" size={15} />
         </span>
         <span>
-          <span className="mockup__float-title">MySQL</span>
+          <span className="mockup__float-title">PostgreSQL</span>
           <span className="mockup__float-sub">dados integrados</span>
         </span>
       </div>

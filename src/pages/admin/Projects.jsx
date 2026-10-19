@@ -212,7 +212,7 @@ export default function AdminProjects() {
                 label="Tecnologias"
                 value={form.technologies}
                 onChange={update('technologies')}
-                hint="Separe por vírgula: C#, MySQL"
+                hint="Separe por vírgula: C#, PostgreSQL"
               />
             </div>
 

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import Logo from './Logo.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 import { COMPANY_NAME, WHATSAPP_MESSAGES } from '../data/company.js';
 import { createWhatsAppLink, whatsappLinkProps } from '../utils/contact.js';
 
@@ -24,11 +25,12 @@ export default function SiteShell({ children }) {
           </Link>
 
           <nav className="shell__links" aria-label="Navegação">
+            <ThemeToggle />
             <Link className="shell__link" to="/baixar">
               Baixar
             </Link>
-            <Link className="shell__link" to="/login">
-              Entrar
+            <Link className="shell__link" to="/minha-licenca">
+              Minha licença
             </Link>
             <Link className="btn btn--primary btn--sm" to="/comprar">
               Comprar
@@ -47,6 +49,7 @@ export default function SiteShell({ children }) {
             © {year} {COMPANY_NAME}
           </p>
           <nav className="shell__footer-links" aria-label="Rodapé">
+            <Link to="/minha-licenca">Minha licença</Link>
             <Link to="/termos">Termos de uso</Link>
             <Link to="/privacidade">Privacidade</Link>
             <a

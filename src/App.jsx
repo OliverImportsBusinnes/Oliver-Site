@@ -23,6 +23,7 @@ import ThankYou from './pages/ThankYou.jsx';
 import Download from './pages/Download.jsx';
 import Terms from './pages/Terms.jsx';
 import Privacy from './pages/Privacy.jsx';
+import MyLicense from './pages/MyLicense.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 export default function App() {
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/baixar" element={<Download />} />
           <Route path="/termos" element={<Terms />} />
           <Route path="/privacidade" element={<Privacy />} />
+          <Route path="/minha-licenca" element={<MyLicense />} />
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Register />} />
           <Route path="/area-do-cliente" element={<ClientAreaInfo />} />

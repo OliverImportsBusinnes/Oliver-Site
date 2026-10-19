@@ -24,6 +24,13 @@ export const EMAIL =
 /** Nome da empresa exibido no site inteiro (header, footer, títulos, SEO). */
 export const COMPANY_NAME = 'Oliver Imports';
 
+/**
+ * Razão social que aparece nos Termos de uso e na Política de privacidade.
+ * Enquanto não for informada, usa o nome da empresa. CNPJ e endereço ainda não
+ * existem: quando existirem, entram aqui (LEGAL_TAX_ID, LEGAL_ADDRESS) e nos textos.
+ */
+export const LEGAL_NAME = COMPANY_NAME;
+
 export const company = {
   name: COMPANY_NAME,
   email: EMAIL,

@@ -17,7 +17,7 @@
   top: 0;
   z-index: 20;
   border-bottom: 1px solid var(--border);
-  background: rgba(5, 8, 7, 0.82);
+  background: rgba(var(--bg-rgb), 0.82);
   backdrop-filter: blur(14px);
 }
 
@@ -84,8 +84,8 @@
   border-radius: var(--r-xl);
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.04),
-    rgba(255, 255, 255, 0.012)
+    rgba(var(--ink), 0.04),
+    rgba(var(--ink), 0.012)
   );
 }
 
@@ -209,7 +209,7 @@
   padding: 1.5rem;
   border: 1px solid var(--green-line);
   border-radius: var(--r-lg);
-  background: linear-gradient(180deg, var(--green-soft), rgba(255, 255, 255, 0.015));
+  background: linear-gradient(180deg, var(--green-soft), rgba(var(--ink), 0.015));
 }
 
 .buy__plan {
@@ -290,7 +290,7 @@
 }
 
 .check--error {
-  color: #fca5a5;
+  color: var(--danger-fg);
 }
 
 .field__error--inline {
@@ -415,7 +415,7 @@
   padding: 1.75rem;
   border: 1px solid var(--green-line);
   border-radius: var(--r-xl);
-  background: linear-gradient(180deg, var(--green-soft), rgba(255, 255, 255, 0.015));
+  background: linear-gradient(180deg, var(--green-soft), rgba(var(--ink), 0.015));
 }
 
 .pricing__devices {
@@ -442,4 +442,125 @@
   .store-card__actions .btn {
     width: 100%;
   }
+}
+
+/* ---------- Minha licença ---------- */
+.account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.store-note a {
+  color: var(--green-400);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.account {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  width: min(760px, 100%);
+  margin-inline: auto;
+}
+
+.account__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.account__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+}
+
+.account__box,
+.account__status {
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  min-width: 0;
+}
+
+.account__status--ok {
+  border-color: var(--green-line);
+  background: var(--green-soft);
+}
+
+.account__status--warn {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.account__status--off {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(248, 113, 113, 0.07);
+}
+
+.account__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.account__value {
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 650;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.account__hint {
+  margin-top: 0.3rem;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.account__subtitle {
+  font-size: 1.05rem;
+  color: var(--white);
+}
+
+.account__devices {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.account__devices li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.account__devices li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.account__device-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.account__devices .account__hint {
+  margin-top: 0;
 }

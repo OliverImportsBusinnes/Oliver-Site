@@ -27,7 +27,7 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--r-xl);
   background: var(--bg-elev);
-  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 40px 90px -30px rgba(var(--shadow-rgb), calc(0.9 * var(--shadow-k)));
   overflow: hidden;
   animation: modal-rise 300ms var(--ease) both;
 }
@@ -143,7 +143,7 @@
   padding: 0.6rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--ink), 0.02);
   font-size: var(--fs-sm);
   color: var(--text);
 }
@@ -168,7 +168,7 @@
   gap: 1rem;
   padding: clamp(1rem, 2vw, 1.25rem) clamp(1.25rem, 2.5vw, 1.75rem);
   border-top: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(var(--ink), 0.015);
 }
 
 .modal__status {
@@ -201,8 +201,8 @@
   border-radius: var(--r-xl);
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.035),
-    rgba(255, 255, 255, 0.01)
+    rgba(var(--ink), 0.035),
+    rgba(var(--ink), 0.01)
   );
 }
 
@@ -274,7 +274,7 @@
 .funnel__progress-item.is-current .funnel__progress-number {
   border-color: var(--green-500);
   background: var(--green-500);
-  color: #04120a;
+  color: var(--on-accent);
 }
 
 .funnel__progress-item.is-done .funnel__progress-btn {
@@ -438,7 +438,7 @@
   height: 52px;
   border-radius: 50%;
   background: var(--green-500);
-  color: #04120a;
+  color: var(--on-accent);
   box-shadow: 0 14px 34px -10px rgba(34, 197, 94, 0.55);
   opacity: 0;
   transform: translateY(16px) scale(0.9);
@@ -476,7 +476,7 @@
   padding: 0.45rem 0.8rem;
   border: 1px solid var(--border-strong);
   border-radius: var(--r-sm);
-  background: #0c110f;
+  background: var(--bg-elev-2);
   color: var(--text);
   font-size: var(--fs-xs);
   white-space: nowrap;

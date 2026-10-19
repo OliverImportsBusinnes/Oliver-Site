@@ -7,7 +7,7 @@ export const stack = [
   { id: 'javascript', label: 'JavaScript', role: 'Web' },
   { id: 'html', label: 'HTML', role: 'Estrutura' },
   { id: 'css', label: 'CSS', role: 'Interface' },
-  { id: 'mysql', label: 'MySQL', role: 'Banco de dados' },
+  { id: 'postgresql', label: 'PostgreSQL', role: 'Banco de dados' },
   { id: 'rest', label: 'REST APIs', role: 'Integração' },
   { id: 'git', label: 'Git', role: 'Versionamento' },
   { id: 'github', label: 'GitHub', role: 'Repositório' },

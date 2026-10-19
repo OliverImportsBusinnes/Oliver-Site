@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import Logo from '../components/Logo.jsx';
 import AccountButton from '../components/AccountButton.jsx';
@@ -30,6 +31,15 @@ export default function Footer() {
 
         <nav className="footer__nav" aria-label="Navegação do rodapé">
           <AccountButton className="footer__account" />
+          <Link className="footer__link" to="/minha-licenca">
+            Minha licença
+          </Link>
+          <Link className="footer__link" to="/termos">
+            Termos
+          </Link>
+          <Link className="footer__link" to="/privacidade">
+            Privacidade
+          </Link>
           {NAV_LINKS.map((link) => (
             <a key={link.href} className="footer__link" href={link.href}>
               {link.label}

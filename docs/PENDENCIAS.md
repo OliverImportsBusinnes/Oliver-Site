@@ -19,8 +19,8 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   O plano completo está em `Panel-Desktop/docs/PLANO_LANCAMENTO.html`, nas fases F3, F4 e F5.
 
   **Andamento (19/10/2026):** o servidor tem o checkout e a interface existe: início do produto, preço, `/comprar`,
-  `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). Faltam a área do cliente com a licença
-  e os downloads (P-009) e a prova da compra de ponta a ponta com o Mercado Pago (P-005 e `docs/COMPRA_AUTOMATICA.md`).
+  `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). A área do comprador também existe
+  (`/minha-licenca`, P-009). Falta a prova da compra de ponta a ponta com o Mercado Pago (P-005 e `docs/COMPRA_AUTOMATICA.md`).
 
 - **P-002** · 2026-10-19 · **A fonte Inter nunca carrega.** O motivo está em dois arquivos:
   - `src/styles/tokens.css` declara `"Inter"`, mas não há `@font-face` nem arquivo de fonte no projeto;
@@ -38,19 +38,25 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   pedido enviado pelo site → `201` da API de licenças → pedido visível na tela Orçamentos do painel. Esse teste é a
   fase 1 de `Panel-Desktop/docs/CRONOGRAMA.md` e não tem registro de execução.
 
-- **P-006** · 2026-10-19 · **Termos e privacidade sem revisão jurídica e sem dados da empresa.** `/termos` e `/privacidade` foram
-  escritos a partir do que o sistema faz, mas faltam razão social, CNPJ e endereço, o foro, a regra do período já pago em
-  caso de cancelamento (hoje o texto só diz que o cancelamento interrompe as próximas cobranças) e o prazo de guarda de
-  dados. Um advogado precisa revisar antes do lançamento.
-- **P-007** · 2026-10-19 · **O mockup da home mostra "MySQL" e dados de exemplo.** `src/components/AppMockup.jsx` é decorativo e
-  cita MySQL, enquanto as lojas novas rodam em PostgreSQL. Trocar por capturas reais do sistema (dependem da F5, redesenho).
 - **P-008** · 2026-10-19 · **Todas as páginas têm o mesmo título e a mesma descrição.** `index.html` fixa o `<title>` do portfólio;
   `/comprar`, `/baixar`, `/termos` e `/privacidade` deveriam ter título próprio, e o texto de SEO da home ainda fala de
   desenvolvimento de software sob medida.
-- **P-009** · 2026-10-19 · **Falta a área do cliente comprador.** Depois da compra o cliente não vê licença, computadores
-  ativados, próximo vencimento nem baixa o instalador por uma área logada; hoje só recebe o e-mail. Depende de a API expor
-  esses dados ao site.
+  **Recomendação (19/10/2026):** um título e uma descrição por rota, definidos num só lugar (`src/data/seo.js`) e
+  aplicados por um componente pequeno que troca `document.title`, a `meta description` e o `canonical` quando a rota
+  muda. O `index.html` passa a vender o produto. Para o Google enxergar o título certo sem rodar JavaScript, o
+  servidor Node pode trocar o `<title>` do HTML por rota antes de enviar (custo baixo, sem mudar de framework).
 
 ## Resolvidas
+
+- **P-006** · aberta em 2026-10-19 · resolvida em 2026-10-19 · Termos e privacidade sem revisão jurídica e sem dados
+  da empresa → o dono decidiu não usar advogado por enquanto e aprovou os textos. A razão social vem de `LEGAL_NAME`
+  em `src/data/company.js` (hoje igual ao nome da empresa, até o dono informar a razão social); CNPJ e endereço
+  ainda não existem e entram no mesmo arquivo quando existirem. Comentários de "revisão pendente" removidos.
+- **P-007** · aberta em 2026-10-19 · resolvida em 2026-10-19 · O site citava MySQL → mockup da home, tecnologias,
+  projeto em destaque e dica do admin passaram a dizer PostgreSQL (`grep MySQL src` vazio; build ok).
+- **P-009** · aberta em 2026-10-19 · resolvida em 2026-10-19 · Faltava a área do cliente comprador → página
+  `/minha-licenca` com link de acesso por e-mail (30 min) e resumo da licença, rotas `/api/account/*` no site e
+  `/api/v1/site/account/*` na API. Testes: 7 no site, 15 na API (token adulterado, vencido, de outra chave). Conferida
+  no navegador com API falsa. A prova com API, banco e e-mail reais fica no P-016 do painel.
 
 Nenhuma ainda.

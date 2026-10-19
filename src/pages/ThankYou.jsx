@@ -45,7 +45,9 @@ export default function ThankYou() {
 
         <p className="store-note">
           <strong>Passou de uma hora e o e-mail não chegou?</strong> Fale com a
-          gente pelo WhatsApp informando o CPF ou CNPJ da compra.
+          gente pelo WhatsApp informando o CPF ou CNPJ da compra. Depois de
+          liberado, você acompanha a licença em{' '}
+          <Link to="/minha-licenca">Minha licença</Link>.
         </p>
 
         <div className="store-card__actions">

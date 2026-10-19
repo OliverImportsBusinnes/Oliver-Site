@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import SiteShell from '../components/SiteShell.jsx';
-import { COMPANY_NAME, EMAIL, WHATSAPP_MESSAGES } from '../data/company.js';
+import { COMPANY_NAME, EMAIL, LEGAL_NAME, WHATSAPP_MESSAGES } from '../data/company.js';
 import { createWhatsAppLink, whatsappDisplay, whatsappLinkProps } from '../utils/contact.js';
 import { PLAN, formatBRL } from '../../shared/plan.js';
 
 /**
  * Termos de uso do Oliver Inventory.
- * Só descreve o que o sistema e o contrato fazem hoje. Pontos que dependem de
- * decisão do dono (período já pago em caso de cancelamento, dados da empresa)
- * estão em docs/PENDENCIAS.md e precisam de revisão jurídica antes do lançamento.
+ * Só descreve o que o sistema e o contrato fazem hoje. Versão aprovada pelo dono
+ * em 19/10/2026, sem revisão jurídica (decisão dele). Quando CNPJ e endereço
+ * existirem, entram na seção 1 a partir de `src/data/company.js`.
  */
 export default function Terms() {
   return (
@@ -23,7 +23,7 @@ export default function Terms() {
 
         <h2>1. Quem oferece o serviço</h2>
         <p>
-          O {PLAN.name} é oferecido pela {COMPANY_NAME}. Quando estes termos
+          O {PLAN.name} é oferecido pela {LEGAL_NAME}. Quando estes termos
           dizem &ldquo;nós&rdquo;, falam da {COMPANY_NAME}; &ldquo;você&rdquo; é
           a pessoa ou a empresa que contrata. Nosso contato está no final desta
           página.

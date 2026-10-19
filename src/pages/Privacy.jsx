@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import SiteShell from '../components/SiteShell.jsx';
-import { COMPANY_NAME, EMAIL } from '../data/company.js';
+import { EMAIL, LEGAL_NAME } from '../data/company.js';
 import { PLAN } from '../../shared/plan.js';
 
 /**
  * Política de privacidade (LGPD) do site e do Oliver Inventory.
  * Lista só o que o sistema coleta de verdade. Se um dado novo passar a ser
- * coletado, esta página muda na mesma tarefa. Precisa de revisão jurídica antes
- * do lançamento (docs/PENDENCIAS.md).
+ * coletado, esta página muda na mesma tarefa. Versão aprovada pelo dono em
+ * 19/10/2026, sem revisão jurídica (decisão dele).
  */
 export default function Privacy() {
   return (
@@ -21,7 +21,7 @@ export default function Privacy() {
         <p className="legal__updated">Versão de 19/10/2026</p>
 
         <p>
-          Esta página explica quais dados pessoais a {COMPANY_NAME} coleta no
+          Esta página explica quais dados pessoais a {LEGAL_NAME} coleta no
           site e no {PLAN.name}, para que servem e quais são os seus direitos,
           conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).
         </p>

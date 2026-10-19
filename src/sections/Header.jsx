@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
 import Logo from '../components/Logo.jsx';
 import AccountButton from '../components/AccountButton.jsx';
+import ThemeToggle from '../components/ThemeToggle.jsx';
 import { NAV_LINKS, WHATSAPP_MESSAGES } from '../data/company.js';
 import { createWhatsAppLink, whatsappLinkProps } from '../utils/contact.js';
 import { useActiveSection } from '../hooks/useActiveSection.js';
@@ -83,6 +84,7 @@ export default function Header() {
         </nav>
 
         <div className="header__actions">
+          <ThemeToggle />
           <AccountButton className="header__cta" />
           <Link className="btn btn--primary btn--sm header__buy" to="/comprar">
             Comprar

@@ -4,13 +4,35 @@
    ========================================================= */
 
 :root {
+  color-scheme: dark;
+
+  /* ---- Canais de cor ----
+     As camadas translúcidas (superfície, borda, brilho) são "tinta" sobre o
+     fundo: branca no tema escuro, quase preta no claro. Escrever
+     rgba(var(--ink), 0.04) em vez de rgba(255, 255, 255, 0.04) é o que deixa
+     o mesmo CSS funcionar nos dois temas. */
+  --ink: 255, 255, 255;
+  --bg-rgb: 5, 8, 7;
+  --shadow-rgb: 0, 0, 0;
+  /* Multiplicador da opacidade das sombras: no claro elas ficam bem mais leves. */
+  --shadow-k: 1;
+
   /* ---- Cores base ---- */
   --bg: #050807;
   --bg-elev: #0a0e0c;
-  --surface: rgba(255, 255, 255, 0.024);
-  --surface-hover: rgba(255, 255, 255, 0.045);
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
+  --bg-elev-2: #0c110f;
+  --bg-elev-3: #0b100e;
+  --surface: rgba(var(--ink), 0.024);
+  --surface-hover: rgba(var(--ink), 0.045);
+  --border: rgba(var(--ink), 0.08);
+  --border-strong: rgba(var(--ink), 0.16);
+
+  /* Texto sobre o botão verde, e cores de estado (erro, aviso, informação). */
+  --on-accent: #04120a;
+  --danger-fg: #fca5a5;
+  --danger-line: #f87171;
+  --warn-fg: #fde68a;
+  --info-fg: #bae6fd;
 
   /* ---- Verde (acento) ---- */
   --green-300: #86efac;
@@ -23,8 +45,8 @@
 
   /* Neutros para ícone/caixa decorativa. O verde fica para ação e estado —
      usar verde em tudo tira o destaque justamente de onde importa. */
-  --icon-bg: rgba(255, 255, 255, 0.05);
-  --icon-border: rgba(255, 255, 255, 0.1);
+  --icon-bg: rgba(var(--ink), 0.05);
+  --icon-border: rgba(var(--ink), 0.1);
   --icon-fg: #b9c4bf;
 
   /* ---- Texto ---- */
@@ -51,7 +73,7 @@
   --r-pill: 999px;
 
   /* ---- Sombras ---- */
-  --shadow-md: 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 18px 40px -18px rgba(var(--shadow-rgb), calc(0.8 * var(--shadow-k)));
 
   /* ---- Tipografia ---- */
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
@@ -71,4 +93,77 @@
   --t-fast: 180ms var(--ease);
   --t-mid: 320ms var(--ease);
   --t-slow: 620ms var(--ease);
+}
+
+/* =========================================================
+   Tema claro. Sem escolha do visitante, segue o sistema; com
+   escolha, o atributo data-theme no <html> vence (ver
+   src/app/theme.js). Os dois blocos têm os mesmos valores.
+   ========================================================= */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --ink: 14, 24, 19;
+    --bg-rgb: 247, 249, 247;
+    --shadow-rgb: 16, 28, 22;
+    --shadow-k: 0.22;
+
+    --bg: #f7f9f7;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #ffffff;
+    --bg-elev-3: #f1f4f2;
+
+    /* Verde mais escuro para texto e ícones: o #4ade80 some sobre o branco. */
+    --green-300: #15803d;
+    --green-400: #15803d;
+    --green-soft: rgba(22, 163, 74, 0.1);
+    --green-line: rgba(22, 163, 74, 0.35);
+    --green-glow: rgba(22, 163, 74, 0.18);
+
+    --icon-fg: #4b5852;
+
+    /* "--white" é a cor dos títulos: branco no escuro, quase preto no claro. */
+    --white: #0b1310;
+    --text: #1c2420;
+    --muted: #56625c;
+    --muted-dim: #66726c;
+
+    --danger-fg: #b91c1c;
+    --danger-line: #dc2626;
+    --warn-fg: #92400e;
+    --info-fg: #075985;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: 14, 24, 19;
+  --bg-rgb: 247, 249, 247;
+  --shadow-rgb: 16, 28, 22;
+  --shadow-k: 0.22;
+
+  --bg: #f7f9f7;
+  --bg-elev: #ffffff;
+  --bg-elev-2: #ffffff;
+  --bg-elev-3: #f1f4f2;
+
+  /* Verde mais escuro para texto e ícones: o #4ade80 some sobre o branco. */
+  --green-300: #15803d;
+  --green-400: #15803d;
+  --green-soft: rgba(22, 163, 74, 0.1);
+  --green-line: rgba(22, 163, 74, 0.35);
+  --green-glow: rgba(22, 163, 74, 0.18);
+
+  --icon-fg: #4b5852;
+
+  /* "--white" é a cor dos títulos: branco no escuro, quase preto no claro. */
+  --white: #0b1310;
+  --text: #1c2420;
+  --muted: #56625c;
+  --muted-dim: #66726c;
+
+  --danger-fg: #b91c1c;
+  --danger-line: #dc2626;
+  --warn-fg: #92400e;
+  --info-fg: #075985;
 }

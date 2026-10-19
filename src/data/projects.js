@@ -24,7 +24,7 @@ export const projects = [
     tagline: 'Estoque, vendas, PDV e comandas em um sistema só.',
     category: 'Sistema Desktop',
     status: 'Em desenvolvimento',
-    technologies: ['C#', 'MySQL', 'PDV', 'Estoque', 'Comandas'],
+    technologies: ['C#', 'PostgreSQL', 'PDV', 'Estoque', 'Comandas'],
     image: '/projects/erp.svg',
     imageAlt:
       'Tela de sistema de gestão com painel de vendas, estoque, comandas e relatórios',
@@ -34,13 +34,13 @@ export const projects = [
     problem:
       'Venda, estoque e comandas viviam em fluxos separados, obrigando a repetir a mesma informação em mais de um lugar e dificultando enxergar a operação como um todo.',
     solution:
-      'Um sistema integrado onde o mesmo cadastro alimenta o PDV, o controle de estoque e o fechamento de comandas, com os dados centralizados em um banco MySQL.',
+      'Um sistema integrado onde o mesmo cadastro alimenta o PDV, o controle de estoque e o fechamento de comandas, com os dados centralizados em um banco PostgreSQL.',
     features: [
       'Controle de estoque',
       'Registro de vendas',
       'PDV',
       'Comandas',
-      'Banco de dados MySQL',
+      'Banco de dados PostgreSQL',
       'Relatórios operacionais',
     ],
     link: null,

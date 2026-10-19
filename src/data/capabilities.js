@@ -30,7 +30,7 @@ export const capabilities = [
     id: 'dados',
     icon: 'database',
     title: 'Dados',
-    items: ['MySQL', 'APIs', 'Arquitetura'],
+    items: ['PostgreSQL', 'APIs', 'Arquitetura'],
     detail:
       'Modelagem e organização do banco para os dados sustentarem a aplicação com integridade e consulta rápida.',
   },

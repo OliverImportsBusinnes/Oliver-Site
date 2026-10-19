@@ -24,6 +24,7 @@ import { messagesService } from './services/messages.js';
 import { attachmentsService } from './services/attachments.js';
 import { quoteRequestsService } from './services/quoteRequests.js';
 import { checkoutService } from './services/checkout.js';
+import { accountService } from './services/account.js';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 
@@ -41,6 +42,7 @@ export function createApp(
     allowedOrigins = [],
     quoteRequests = quoteRequestsService(),
     checkout = checkoutService(),
+    account = accountService(),
   } = {}
 ) {
   const ctx = createContext(db);
@@ -101,6 +103,20 @@ export function createApp(
       clientKey: clientAddress(headers),
     });
     return { status: 200, body: result };
+  });
+
+  /* Área do cliente comprador: pedir o link de acesso por e-mail e, com o
+     token do link, ler o resumo da licença. Sem sessão do site: a prova de
+     identidade é ter recebido o e-mail. */
+  router.post('/api/account/access-link', async ({ body, headers }) => {
+    const input = pick(body, ['taxId', 'email']);
+    await account.requestLink(input, { clientKey: clientAddress(headers) });
+    return { status: 202, body: { sent: true } };
+  });
+
+  router.post('/api/account/summary', async ({ body }) => {
+    const input = pick(body, ['token']);
+    return { status: 200, body: await account.summary(input) };
   });
 
   /* --------------------------------------------------------- autenticação */

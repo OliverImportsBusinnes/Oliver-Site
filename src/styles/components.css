@@ -24,7 +24,7 @@
 /* Faixa sutil que separa a área de tecnologias do restante. */
 .section--stack {
   border-block: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.012);
+  background: rgba(var(--ink), 0.012);
 }
 
 /* ---------- Cabeçalho de seção ---------- */
@@ -99,7 +99,7 @@
 /* Primário — verde sólido */
 .btn--primary {
   background: var(--green-500);
-  color: #04120a;
+  color: var(--on-accent);
   box-shadow: 0 10px 26px -12px var(--green-glow);
 }
 
@@ -161,7 +161,7 @@
 }
 
 .btn--danger-soft:hover {
-  color: #fca5a5;
+  color: var(--danger-fg);
   border-color: rgba(248, 113, 113, 0.4);
   background: rgba(248, 113, 113, 0.08);
 }
@@ -214,7 +214,7 @@
   padding: 0.3rem 0.65rem;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--ink), 0.03);
   color: var(--muted);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -275,4 +275,30 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* ---------- Botão de tema ---------- */
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast), background var(--t-fast);
+}
+
+.theme-toggle:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--green-500);
+  outline-offset: 2px;
 }

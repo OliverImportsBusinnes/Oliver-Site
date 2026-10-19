@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Logo from '../../components/Logo.jsx';
+import ThemeToggle from '../../components/ThemeToggle.jsx';
 import Icon from '../../components/Icon.jsx';
 import UnreadBadge from '../../components/panel/UnreadBadge.jsx';
 import { useAuth } from '../../app/AuthContext.jsx';
@@ -90,6 +91,8 @@ export default function ClientLayout() {
               ) : null}
             </span>
           </div>
+
+          <ThemeToggle />
 
           <button type="button" className="btn btn--soft btn--xs" onClick={sair}>
             <Icon name="arrowUpRight" size={15} />
