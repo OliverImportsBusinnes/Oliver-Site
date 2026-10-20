@@ -1,7 +1,7 @@
 # Oliver Imports — Site
 
-Site institucional da **Oliver Imports**, com os projetos como conteúdo
-principal. Feito em **React + Vite**, sem dependências pesadas: animações em
+Site da **Oliver Imports**: vende o **Oliver Inventory** (estoque, caixa e PDV
+para Windows) e, abaixo, apresenta os serviços sob medida. Feito em **React + Vite**, sem dependências pesadas: animações em
 CSS, ícones em SVG inline, nenhuma biblioteca de UI.
 
 ---
@@ -25,8 +25,12 @@ responde é o próprio `server.js`, na mesma origem, e o front não muda.
 
 | Rota | O que é |
 |---|---|
-| `/` | Site público |
-| `/login` · `/cadastro` | Entrar / criar conta |
+| `/` | Site público: o produto, o preço e os serviços sob medida |
+| `/comprar` · `/obrigado` | Compra pelo Mercado Pago e retorno depois de pagar |
+| `/baixar` | Download do instalador |
+| `/minha-licenca` | Área do comprador (link de acesso por e-mail) |
+| `/termos` · `/privacidade` | Textos legais |
+| `/login` · `/cadastro` | Entrar / criar conta (projetos sob medida) |
 | `/cliente` | Painel do cliente (projetos, solicitações, mensagens) |
 | `/admin` | Painel administrativo (só para `role = ADMIN`) |
 
@@ -139,7 +143,8 @@ espaçamentos, raios e transições saem todos de `tokens.css`.
 | Arquivo | O que controla |
 |---|---|
 | `src/data/company.js` | Nome, e-mail, WhatsApp, mensagens, menu |
-| `src/data/projects.js` | Portfólio (o destaque é o que tem `featured: true`) |
+| `src/data/product.js` e `shared/plan.js` | O produto à venda, o que ele faz e o preço |
+| `/admin/projetos` | Portfólio exibido na home (destaque = `featured`); sem nenhum projeto público, a home usa `src/data/projects.js` |
 | `src/data/capabilities.js` | "O que desenvolvemos" |
 | `src/data/process.js` | "Como trabalhamos" |
 | `src/data/stack.js` | Tecnologias |
@@ -178,6 +183,12 @@ node scripts/generate-og.mjs
 ---
 
 ## 🚀 Publicar no Render + Neon — passo a passo
+
+> **Destino de produção planejado: VPS da Hostinger**, junto com a API de
+> licenças, num `docker compose` (`Panel-Desktop/deploy/hostinger/`). O passo a
+> passo para iniciante está em `Panel-Desktop/docs/HOSPEDAGEM_HOSTINGER.md` e o
+> funcionamento da loja em `docs/LOJA_E_COMPRA.md`. O roteiro do Render abaixo
+> continua valendo enquanto a migração não acontece.
 
 > Com back-end, **não dá mais para arrastar a pasta `dist`**: o site precisa do
 > servidor Node e do banco. Tem que ser por repositório.
@@ -358,13 +369,6 @@ de `server/app.js`, um `vercel.json` mandando `/api/(.*)` para essa função e o
 resto para o `dist/`, e trocar o driver para `postgres` — `sqlite` deixa de ser
 opção. O `RENDER_EXTERNAL_URL` também some, então `ALLOWED_ORIGINS` passa a ser
 obrigatória com a URL da Vercel dentro.
-
-> Antes de qualquer import: a integração com a Oliver Licensing
-> (`LICENSING_API_BASE_URL`, `SITE_SERVICE_API_KEY`, `QuoteForm.jsx`,
-> `server/services/quoteRequests.js`) ainda **não está no GitHub**. Um deploy
-> feito agora publica o site sem o formulário de orçamento — e é por isso que a
-> tela de import da Vercel detecta 10 variáveis em vez das 13 do
-> `.env.example` atual.
 
 Dois modelos prontos ficam na raiz, os dois cobertos pelo `.gitignore`:
 `.env` para rodar na sua máquina e `.env.deploy` para importar no painel do

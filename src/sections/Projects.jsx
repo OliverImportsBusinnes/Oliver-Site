@@ -1,13 +1,42 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import Reveal from '../components/Reveal.jsx';
 import ProjectModal from '../components/ProjectModal.jsx';
 import MockupTag from '../components/MockupTag.jsx';
-import { featuredProject, otherProjects } from '../data/projects.js';
+import { projects as staticProjects } from '../data/projects.js';
+import { api } from '../api/client.js';
+import { pickProjects } from '../utils/publicProjects.js';
 import { EVENTS, track } from '../utils/analytics.js';
+
+/**
+ * Projetos cadastrados no admin (`GET /api/projects`), com o arquivo estático
+ * como reserva enquanto carrega, se a API falhar ou se não houver nenhum
+ * projeto público (P-003).
+ */
+function usePublicProjects() {
+  const [picked, setPicked] = useState(() => pickProjects(null, staticProjects));
+
+  useEffect(() => {
+    let cancelled = false;
+    api
+      .get('/projects')
+      .then((result) => {
+        if (!cancelled) setPicked(pickProjects(result?.projects, staticProjects));
+      })
+      .catch(() => {
+        /* Sem API a home continua com os projetos do arquivo estático. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return picked;
+}
 
 export default function Projects() {
   const [active, setActive] = useState(null);
+  const { featured: featuredProject, others: otherProjects } = usePublicProjects();
 
   const open = useCallback((project) => {
     setActive(project);

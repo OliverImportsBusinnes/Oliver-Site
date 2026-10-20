@@ -27,13 +27,6 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   - o CSP de `server.js` só permite `font-src 'self'`.
 
   Resultado: o site sempre mostra a fonte do sistema.
-- **P-003** · 2026-10-19 · **A home ignora os projetos cadastrados no admin.** A seção `Projects` lê o arquivo
-  estático `src/data/projects.js`, e nenhum código do front chama `GET /api/projects`. Projeto criado em
-  `/admin/projetos` não aparece na home, ao contrário do que diz o passo 6 do README.
-- **P-004** · 2026-10-19 · **O README e um script de desenvolvimento estão desatualizados.**
-  - A seção Vercel do README diz que a integração com a API de licenças "ainda não está no GitHub", mas ela está no
-    commit `29b5732`.
-  - `scripts/dev-api.mjs` ainda afirma que a produção usa a Netlify Function, mas a produção está no Render.
 - **P-005** · 2026-10-19 · **O formulário de orçamento nunca foi provado de ponta a ponta.** O teste completo é:
   pedido enviado pelo site → `201` da API de licenças → pedido visível na tela Orçamentos do painel. Esse teste é a
   fase 1 de `Panel-Desktop/docs/CRONOGRAMA.md` e não tem registro de execução.
@@ -48,6 +41,13 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 
 ## Resolvidas
 
+- **P-004** · aberta em 2026-10-19 · resolvida em 2026-10-20 · README e `scripts/dev-api.mjs` desatualizados → README
+  com as rotas da loja, o produto como conteúdo principal, o portfólio vindo do admin e o aviso do destino na VPS; a nota
+  de que a integração "não está no GitHub" saiu; o script não fala mais da Netlify Function.
+- **P-003** · aberta em 2026-10-19 · resolvida em 2026-10-20 · A home ignorava os projetos do admin → a seção
+  `Projects` lê `GET /api/projects` e usa `src/data/projects.js` só como reserva (carregando, API fora ou nenhum projeto
+  público). Conversão em `src/utils/publicProjects.js` com 3 testes. Conferido no navegador: sem projeto público aparecem
+  os 3 do arquivo; com um projeto público criado no banco de desenvolvimento, ele vira o destaque.
 - **P-006** · aberta em 2026-10-19 · resolvida em 2026-10-19 · Termos e privacidade sem revisão jurídica e sem dados
   da empresa → o dono decidiu não usar advogado por enquanto e aprovou os textos. A razão social vem de `LEGAL_NAME`
   em `src/data/company.js` (hoje igual ao nome da empresa, até o dono informar a razão social); CNPJ e endereço

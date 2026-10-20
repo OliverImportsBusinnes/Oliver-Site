@@ -1,9 +1,10 @@
 /* =========================================================================
    Servidor de API para desenvolvimento local.
 
-   Em produção quem atende /api é a Netlify Function. Localmente subimos a
-   MESMA aplicação (`server/app.js`) num servidor http comum, para o front
-   funcionar de verdade durante o desenvolvimento.
+   Em produção quem atende /api é o próprio `server.js` (hoje no Render; no
+   plano, na VPS da Hostinger). Localmente subimos a MESMA aplicação
+   (`server/app.js`) num servidor http comum, para o front funcionar de verdade
+   durante o desenvolvimento.
 
    Uso:  npm run dev:api      (o `npm run dev` já sobe os dois juntos)
    ========================================================================= */
