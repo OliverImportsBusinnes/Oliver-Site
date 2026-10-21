@@ -246,16 +246,17 @@ test('erro 500 da API central não vira 500 aqui nem expõe o motivo', async () 
   }
 });
 
-test('documento já cadastrado (409) vira orientação para falar pelo WhatsApp', async () => {
+test('documento que já é cliente (409) recebe mensagem neutra, sem dizer que é cliente', async () => {
   const { app, close } = await createAppWithLicensing({
     status: 409,
-    body: { detail: 'Este CPF ou CNPJ já tem cadastro. Fale com a gente pelo WhatsApp para contratar ou renovar.' },
+    body: { detail: 'qualquer texto da API' },
   });
   try {
     const response = await post(app, PEDIDO);
     assert.equal(response.status, 409);
-    assert.equal(response.body.error, 'DOCUMENTO_JA_CADASTRADO');
-    assert.match(response.body.message, /WhatsApp/);
+    assert.equal(response.body.error, 'CONFIRA_O_EMAIL');
+    assert.doesNotMatch(response.body.message, /já tem cadastro|já cadastrado/i);
+    assert.match(response.body.message, /e-mail do cadastro/);
   } finally {
     await close();
   }

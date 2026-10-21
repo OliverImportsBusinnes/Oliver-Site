@@ -187,14 +187,14 @@ export function checkoutService({
     if (response.status === 400) {
       throw badRequest('Confira os campos destacados.', safeFieldErrors(body.errors, FIELDS));
     }
-    /* Documento que já tem cadastro: o texto da API já diz o que fazer (falar
-       pelo WhatsApp) e não revela nada além de "este documento existe", que o
-       próprio dono do documento precisa saber. */
+    /* Documento que já é cliente (decisão do dono, 21/10/2026): a tela não diz
+       "já cadastrado", para a compra não servir de consulta de quem é cliente.
+       A API manda o link da área Minha licença para o e-mail do cadastro. */
     if (response.status === 409) {
       throw new AppError(
         409,
-        'DOCUMENTO_JA_CADASTRADO',
-        'Este CPF ou CNPJ já tem cadastro. Fale com a gente pelo WhatsApp.'
+        'CONFIRA_O_EMAIL',
+        'Não foi possível iniciar a compra com estes dados. Se este CPF ou CNPJ já tiver cadastro, enviamos o link da área Minha licença para o e-mail do cadastro.'
       );
     }
 

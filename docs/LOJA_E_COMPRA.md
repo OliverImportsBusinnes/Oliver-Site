@@ -27,7 +27,7 @@ a home mantém o cabeçalho próprio com as âncoras de seção.
 2. O servidor (`server/services/checkout.js`) valida de novo, limita a 5 pedidos
    por 10 minutos e chama a API de licenciamento. Resposta: `{ checkoutUrl }`.
 3. A página só segue para `checkoutUrl` se for `https:`. Erros 400 viram mensagem
-   por campo; 409 (documento já cadastrado), 429 e 503 viram um aviso no topo.
+   por campo; 409 (documento que já é cliente: mensagem neutra, e a API manda o link da Minha licença ao e-mail do cadastro), 429 e 503 viram um aviso no topo.
 4. Pago o plano, o Mercado Pago devolve o cliente em `/obrigado`. **Quem libera a
    licença e manda o e-mail é a API** (webhook + entrega automática), nunca o site.
 
