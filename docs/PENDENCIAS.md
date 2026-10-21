@@ -16,7 +16,7 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   - compra automática pelo Mercado Pago;
   - hospedagem numa VPS da Hostinger.
 
-  O plano completo está em `Panel-Desktop/docs/PLANO_LANCAMENTO.html`, nas fases F3, F4 e F5.
+  O plano completo está no `PLANO_LANCAMENTO.html` (em `Documentos\Claude-HTML\Panel-Desktop`), nas fases F3, F4 e F5.
 
   **Andamento (19/10/2026):** o servidor tem o checkout e a interface existe: início do produto, preço, `/comprar`,
   `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). A área do comprador também existe
