@@ -11,10 +11,10 @@
 export const PLAN = Object.freeze({
   name: 'Oliver Inventory',
   /** Mensalidade com o computador incluído. */
-  basePrice: 500,
+  basePrice: 110,
   includedDevices: 1,
   /** Por computador a mais. */
-  extraDevicePrice: 50,
+  extraDevicePrice: 20,
   /** Teto do formulário de compra; acima disso é negociação pelo WhatsApp. */
   maxDevices: 20,
 });
