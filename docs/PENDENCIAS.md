@@ -24,7 +24,10 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 
 
   Resultado: o site sempre mostra a fonte do sistema.
-
+- **P-010** · 2026-10-21 · **Achados baixos da varredura de 21/10/2026 no site, não corrigidos nesta rodada:** `RouteSeo` não
+  atualiza o `og:url` na navegação interna e o título diferencia maiúsculas (`/Comprar` mostra o título de 404); a função
+  da Netlify não tira a barra final de `ALLOWED_ORIGINS` (só importa se esse caminho de deploy voltar a ser usado); os
+  limites por endereço ficam em memória, por processo (somem num reinício e não se somam entre instâncias).
 
 ## Resolvidas
 
