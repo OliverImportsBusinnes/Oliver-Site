@@ -24,13 +24,14 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 
 
   Resultado: o site sempre mostra a fonte do sistema.
-- **P-010** · 2026-10-21 · **Achados baixos da varredura de 21/10/2026 no site, não corrigidos nesta rodada:** `RouteSeo` não
-  atualiza o `og:url` na navegação interna e o título diferencia maiúsculas (`/Comprar` mostra o título de 404); a função
-  da Netlify não tira a barra final de `ALLOWED_ORIGINS` (só importa se esse caminho de deploy voltar a ser usado); os
-  limites por endereço ficam em memória, por processo (somem num reinício e não se somam entre instâncias).
 
 ## Resolvidas
 
+- **P-010** · aberta em 2026-10-21 · resolvida em 2026-10-21 · Achados baixos da varredura no site → `RouteSeo`
+  atualiza `canonical` e `og:url` na navegação interna e o caminho não diferencia maiúsculas (`/Comprar` mostra o
+  título de `/comprar`); `server/http/origins.js` tira a barra final de `ALLOWED_ORIGINS` no `server.js` e na função
+  do Netlify; o limite por processo do `rateLimit.js` ficou documentado em `SEGURANCA.md` (com um processo só na VPS
+  basta). Teste `tests/seo-rota.test.js`; suíte 195 de 195 e build.
 - **P-005** · aberta em 2026-10-19 · resolvida em 2026-10-21 · Formulário de orçamento nunca provado de ponta a ponta →
   provado com o servidor do site local e a API local: o formulário da home enviou o pedido, o site respondeu `201`, o
   pedido ficou no banco central (`solicitacoes_orcamento`, id 11, origem `Site`) e apareceu na tela Orçamentos do painel
