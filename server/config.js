@@ -109,6 +109,15 @@ const readEnv = (key, fallback = undefined) => {
   return value === undefined || value === '' ? fallback : value;
 };
 
+/** Tempo máximo padrão das chamadas à API de licenciamento (o Render hiberna). */
+export const DEFAULT_TIMEOUT_MS = 90000;
+
+/** Texto de ambiente -> milissegundos; o que não for número positivo vira o padrão. */
+export function parseTimeoutMs(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TIMEOUT_MS;
+}
+
 export const config = Object.freeze({
   /** 'postgres' em produção (Neon), 'sqlite' para desenvolvimento e testes. */
   driver: readEnv('DATABASE_DRIVER', 'sqlite'),
@@ -124,6 +133,8 @@ export const config = Object.freeze({
     ssl: readEnv('DATABASE_SSL', 'require') !== 'disable',
   }),
 
+  /* Reservado: hoje nada o usa (a sessão é um token aleatório cujo hash fica no
+     banco). Opcional; não é exigido em produção. */
   sessionSecret: readEnv('SESSION_SECRET'),
   isProduction: readEnv('NODE_ENV') === 'production',
 
@@ -149,7 +160,7 @@ export const config = Object.freeze({
     /* O plano gratuito do Render hiberna: o primeiro pedido depois da
        inatividade acorda o serviço e demora. Abaixo disso, um orçamento
        legítimo viraria erro só porque a API estava dormindo. */
-    timeoutMs: Number(readEnv('LICENSING_API_TIMEOUT_MS', '90000')),
+    timeoutMs: parseTimeoutMs(readEnv('LICENSING_API_TIMEOUT_MS')),
   }),
 });
 
@@ -163,8 +174,6 @@ export function assertProductionConfig() {
   if (config.driver === 'postgres' && !config.postgres.url) {
     missing.push('DATABASE_URL');
   }
-
-  if (!config.sessionSecret) missing.push('SESSION_SECRET');
 
   /* As duas andam juntas: uma sozinha significa integração pela metade, e o
      formulário de orçamento falharia só em produção, na frente do visitante. */

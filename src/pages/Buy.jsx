@@ -9,6 +9,7 @@ import { isValidTaxId, formatTaxId } from '../../shared/taxId.js';
 import { createWhatsAppLink, whatsappLinkProps } from '../utils/contact.js';
 import { WHATSAPP_MESSAGES } from '../data/company.js';
 import { PRODUCT } from '../data/product.js';
+import { safeCheckoutUrl } from '../utils/checkoutUrl.js';
 
 const VAZIO = {
   companyName: '',
@@ -28,16 +29,6 @@ function normalizeErrors(details) {
     normalized[key.toLowerCase()] = Array.isArray(value) ? value[0] : value;
   }
   return normalized;
-}
-
-/** Só segue para um endereço https: a API devolve o link do Mercado Pago, e um link estranho não deve levar o cliente a lugar nenhum. */
-function safeCheckoutUrl(value) {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' ? url.toString() : null;
-  } catch {
-    return null;
-  }
 }
 
 export default function Buy() {
@@ -82,6 +73,9 @@ export default function Buy() {
     }
 
     setSending(true);
+    /* Redirecionando: o botão fica desabilitado até a página trocar, senão dá
+       para clicar de novo e criar um segundo pedido. */
+    let redirecting = false;
     setErrors({});
 
     try {
@@ -101,6 +95,7 @@ export default function Buy() {
         return;
       }
       /* Sai do site de propósito: o pagamento acontece no Mercado Pago. */
+      redirecting = true;
       window.location.assign(target);
     } catch (failure) {
       if (failure instanceof ApiError && failure.status === 400 && failure.details) {
@@ -114,7 +109,7 @@ export default function Buy() {
         );
       }
     } finally {
-      setSending(false);
+      if (!redirecting) setSending(false);
     }
   }
 

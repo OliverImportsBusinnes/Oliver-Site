@@ -14,7 +14,16 @@ import {
   serializeClearedSessionCookie,
   serializeSessionCookie,
 } from './http/cookies.js';
-import { AppError, badRequest, forbidden, notFound, unauthorized } from './http/errors.js';
+import {
+  AppError,
+  badRequest,
+  forbidden,
+  notFound,
+  tooManyRequests,
+  unauthorized,
+} from './http/errors.js';
+import { clientAddress } from './http/clientAddress.js';
+import { createRateLimiter } from './http/rateLimit.js';
 import { parsePagination, pick, toId } from './http/validation.js';
 import { authService } from './services/auth.js';
 import { projectsService } from './services/projects.js';
@@ -30,6 +39,13 @@ const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
 
 /** Métodos que alteram estado — só eles precisam de checagem de origem. */
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+
+/* Login e cadastro rodam scrypt (caro de propósito): sem teto por IP, poucas
+   requisições bastam para travar o processo. O bloqueio por e-mail do login
+   continua valendo; este é o teto por endereço. */
+const AUTH_WINDOW_MS = 10 * 60 * 1000;
+const LOGIN_MAX_PER_IP = 20;
+const REGISTER_MAX_PER_IP = 10;
 
 /**
  * `quoteRequests` entra por parâmetro para os testes poderem trocar o `fetch`
@@ -54,6 +70,15 @@ export function createApp(
   const clients = clientsService(ctx);
 
   const router = createRouter();
+  const loginLimiter = createRateLimiter({ max: LOGIN_MAX_PER_IP, windowMs: AUTH_WINDOW_MS });
+  const registerLimiter = createRateLimiter({
+    max: REGISTER_MAX_PER_IP,
+    windowMs: AUTH_WINDOW_MS,
+  });
+
+  const limitByIp = (limiter, headers, remoteAddress, message) => {
+    if (!limiter.hit(clientAddress(headers, remoteAddress))) throw tooManyRequests(message);
+  };
 
   /* ------------------------------------------------------------ público */
 
@@ -69,7 +94,7 @@ export function createApp(
      mesma regra das outras rotas — mandar `status` ou `customerId` junto não
      tem efeito, e quem chega pelo formulário não escolhe a situação do próprio
      pedido. */
-  router.post('/api/quote-requests', async ({ body, headers }) => {
+  router.post('/api/quote-requests', async ({ body, headers, remoteAddress }) => {
     const input = pick(body, [
       'requesterName',
       'requesterEmail',
@@ -79,7 +104,7 @@ export function createApp(
       'description',
     ]);
     const created = await quoteRequests.create(input, {
-      clientKey: clientAddress(headers),
+      clientKey: clientAddress(headers, remoteAddress),
     });
     return { status: 201, body: { quoteRequest: created } };
   });
@@ -89,7 +114,7 @@ export function createApp(
      pagamento; a licença só sai depois do pagamento confirmado lá. `pick`
      limita o que entra: `price`, `plan` ou `customerId` no corpo não têm
      efeito, e o preço é calculado do outro lado. */
-  router.post('/api/checkout', async ({ body, headers }) => {
+  router.post('/api/checkout', async ({ body, headers, remoteAddress }) => {
     const input = pick(body, [
       'companyName',
       'contactName',
@@ -100,7 +125,7 @@ export function createApp(
       'acceptTerms',
     ]);
     const result = await checkout.create(input, {
-      clientKey: clientAddress(headers),
+      clientKey: clientAddress(headers, remoteAddress),
     });
     return { status: 200, body: result };
   });
@@ -108,9 +133,9 @@ export function createApp(
   /* Área do cliente comprador: pedir o link de acesso por e-mail e, com o
      token do link, ler o resumo da licença. Sem sessão do site: a prova de
      identidade é ter recebido o e-mail. */
-  router.post('/api/account/access-link', async ({ body, headers }) => {
+  router.post('/api/account/access-link', async ({ body, headers, remoteAddress }) => {
     const input = pick(body, ['taxId', 'email']);
-    await account.requestLink(input, { clientKey: clientAddress(headers) });
+    await account.requestLink(input, { clientKey: clientAddress(headers, remoteAddress) });
     return { status: 202, body: { sent: true } };
   });
 
@@ -121,14 +146,26 @@ export function createApp(
 
   /* --------------------------------------------------------- autenticação */
 
-  router.post('/api/auth/register', async ({ body }) => {
+  router.post('/api/auth/register', async ({ body, headers, remoteAddress }) => {
+    limitByIp(
+      registerLimiter,
+      headers,
+      remoteAddress,
+      'Muitos cadastros deste endereço agora há pouco. Aguarde alguns minutos.'
+    );
     /* Só estes campos são lidos: enviar `role` junto não tem efeito. */
     const input = pick(body, ['name', 'company', 'email', 'phone', 'password']);
     const user = await auth.register(input);
     return { status: 201, body: { user } };
   });
 
-  router.post('/api/auth/login', async ({ body }) => {
+  router.post('/api/auth/login', async ({ body, headers, remoteAddress }) => {
+    limitByIp(
+      loginLimiter,
+      headers,
+      remoteAddress,
+      'Muitas tentativas de login deste endereço. Aguarde alguns minutos e tente novamente.'
+    );
     const input = pick(body, ['email', 'password']);
     const { user, token, expiresAt } = await auth.login(input);
 
@@ -484,6 +521,7 @@ export function createApp(
         query: request.query ?? {},
         body: request.body ?? {},
         headers,
+        remoteAddress: request.remoteAddress,
       });
 
       if (result.raw) return respondRaw(result.status ?? 200, result.raw);
@@ -503,23 +541,6 @@ function requireId(raw) {
   const id = toId(raw);
   if (!id) throw badRequest('Identificador inválido.');
   return id;
-}
-
-/**
- * Endereço do visitante, para contar pedidos por pessoa e não por servidor.
- * O Render põe a cadeia de proxies em `x-forwarded-for`, e o primeiro item é o
- * cliente. Sem proxy o cabeçalho não existe e todo mundo cai na mesma chave —
- * aceitável, porque fora do Render isto está em desenvolvimento.
- *
- * Não serve para autorizar nada: o cabeçalho é forjável por quem fala direto
- * com o processo. Aqui ele só reparte uma cota.
- */
-function clientAddress(headers) {
-  const forwarded = headers?.['x-forwarded-for'];
-  if (typeof forwarded === 'string' && forwarded.trim()) {
-    return forwarded.split(',')[0].trim();
-  }
-  return 'desconhecido';
 }
 
 function normalizeHeaders(headers = {}) {

@@ -14,6 +14,8 @@
 import { config, LIMITS } from '../config.js';
 import { AppError, badRequest, tooManyRequests } from '../http/errors.js';
 import { createValidator } from '../http/validation.js';
+import { createRateLimiter } from '../http/rateLimit.js';
+import { safeFieldErrors } from '../http/fieldErrors.js';
 
 /** Limites do contrato da API central (QuoteRequestCreateRequest). */
 const SUBJECT_MIN = 3;
@@ -29,6 +31,16 @@ const DESCRIPTION_MAX = 5000;
    instância. Reiniciar zera a contagem, e com várias instâncias cada uma teria
    a sua — aceitável para conter spam de formulário, insuficiente para um
    ataque distribuído, que é problema da camada de rede. */
+/* Campos do formulário: só erros com estas chaves voltam ao navegador. */
+const FIELDS = [
+  'requesterName',
+  'requesterEmail',
+  'requesterPhone',
+  'company',
+  'subject',
+  'description',
+];
+
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 
@@ -36,8 +48,8 @@ export function quoteRequestsService({
   fetchImpl = fetch,
   licensing = config.licensing,
 } = {}) {
-  /** IP do visitante -> instantes dos pedidos aceitos dentro da janela. */
-  const recentByClient = new Map();
+  /** IP do visitante -> pedidos aceitos dentro da janela (mapa com teto de chaves). */
+  const limiter = createRateLimiter({ max: RATE_LIMIT_MAX, windowMs: RATE_LIMIT_WINDOW_MS });
 
   const configured = Boolean(licensing.baseUrl && licensing.serviceKey);
 
@@ -70,25 +82,12 @@ export function quoteRequestsService({
    * pedir de verdade.
    */
   function enforceRateLimit(clientKey) {
-    const now = Date.now();
-    const cutoff = now - RATE_LIMIT_WINDOW_MS;
-
-    /* Varre o mapa inteiro, e não só a chave atual: sem isto o IP que pediu uma
-       vez e nunca voltou ficaria guardado para sempre. */
-    for (const [key, timestamps] of recentByClient) {
-      const fresh = timestamps.filter((instant) => instant > cutoff);
-      if (fresh.length === 0) recentByClient.delete(key);
-      else recentByClient.set(key, fresh);
-    }
-
-    const recent = recentByClient.get(clientKey) ?? [];
-    if (recent.length >= RATE_LIMIT_MAX) {
+    if (!limiter.hit(clientKey)) {
       throw tooManyRequests(
         'Você já enviou vários pedidos agora há pouco. Aguarde alguns minutos ' +
           'ou fale com a gente pelo WhatsApp.'
       );
     }
-    recentByClient.set(clientKey, [...recent, now]);
   }
 
   function validate(input) {
@@ -199,10 +198,7 @@ export function quoteRequestsService({
        deixa o formulário destacá-los. Qualquer outro status é problema nosso, e
        o detalhe interno não vai para o navegador. */
     if (response.status === 400) {
-      throw badRequest(
-        body.detail ?? 'Confira os campos destacados.',
-        body.errors ?? null
-      );
+      throw badRequest('Confira os campos destacados.', safeFieldErrors(body.errors, FIELDS));
     }
 
     console.error(

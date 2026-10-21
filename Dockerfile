@@ -12,7 +12,7 @@ COPY . .
 
 # Valores PÚBLICOS: o Vite os grava no JavaScript que vai para o navegador.
 # Por isso entram na hora do build e mudá-los exige reconstruir a imagem.
-ARG VITE_SITE_URL=""
+ARG VITE_SITE_URL="https://oliverimports.com.br"
 ARG VITE_COMPANY_EMAIL=""
 ARG VITE_INSTALLER_URL=""
 ENV VITE_SITE_URL=$VITE_SITE_URL \
@@ -36,10 +36,10 @@ COPY scripts ./scripts
 
 # O usuário "node" já existe na imagem; o site não precisa de root.
 USER node
-EXPOSE 3000
+EXPOSE 8080
 
 # A rota /api/health responde 200 quando o processo está de pé.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||3000)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+  CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8080)+'/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 
 CMD ["node", "server.js"]

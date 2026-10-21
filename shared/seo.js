@@ -46,7 +46,7 @@ const PRIVATE = [
   ['/admin', `Painel | ${COMPANY}`],
 ];
 
-const NOT_FOUND = { title: `Página não encontrada | ${COMPANY}`, description: PUBLIC['/'].description, noindex: true };
+const NOT_FOUND = { title: `Página não encontrada | ${COMPANY}`, description: PUBLIC['/'].description, noindex: true, notFound: true };
 
 /** Título, descrição e se a página fica fora dos buscadores, para um caminho. */
 export function seoFor(pathname) {
@@ -58,7 +58,7 @@ export function seoFor(pathname) {
 }
 
 const escapeHtml = (text) =>
-  String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
 /**
  * Troca no index.html (já com a URL do site no lugar de __SITE_URL__) o título, as descrições, o canonical e as
@@ -70,6 +70,7 @@ export function applySeo(html, pathname) {
   const path = (pathname || '/').replace(/\/+$/, '') || '/';
   const title = escapeHtml(seo.title);
   const description = escapeHtml(seo.description);
+  const pathAttr = escapeHtml(path === '/' ? '/' : path);
   let out = html
     .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
     .replace(/(<meta\s+name="description"\s+content=")[^"]*(")/, `$1${description}$2`)
@@ -77,8 +78,8 @@ export function applySeo(html, pathname) {
     .replace(/(<meta\s+property="og:description"\s+content=")[^"]*(")/, `$1${description}$2`)
     .replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/, `$1${title}$2`)
     .replace(/(<meta\s+name="twitter:description"\s+content=")[^"]*(")/, `$1${description}$2`)
-    .replace(/(<link\s+rel="canonical"\s+href="[^"]*?)\/?(")/, `$1${path === '/' ? '/' : path}$2`)
-    .replace(/(<meta\s+property="og:url"\s+content="[^"]*?)\/?(")/, `$1${path === '/' ? '/' : path}$2`);
+    .replace(/(<link\s+rel="canonical"\s+href="[^"]*?)\/?(")/, (_, abre, fecha) => `${abre}${pathAttr}${fecha}`)
+    .replace(/(<meta\s+property="og:url"\s+content="[^"]*?)\/?(")/, (_, abre, fecha) => `${abre}${pathAttr}${fecha}`);
   if (seo.noindex) out = out.replace('</head>', '  <meta name="robots" content="noindex" />\n  </head>');
   return out;
 }

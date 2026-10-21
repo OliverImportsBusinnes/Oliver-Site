@@ -11,9 +11,10 @@
    a tela não pode servir para descobrir quem é cliente.
    ========================================================================= */
 
-import { config } from '../config.js';
+import { config, DEFAULT_TIMEOUT_MS } from '../config.js';
 import { AppError, badRequest, tooManyRequests, unauthorized } from '../http/errors.js';
 import { createValidator } from '../http/validation.js';
+import { createRateLimiter } from '../http/rateLimit.js';
 import { isValidTaxId, onlyDigits } from '../../shared/taxId.js';
 
 const RATE_LIMIT_MAX = 5;
@@ -25,24 +26,17 @@ const UNAVAILABLE =
   'ou fale com a gente pelo WhatsApp.';
 
 export function accountService({ fetchImpl = fetch, licensing = config.licensing } = {}) {
-  const recentByClient = new Map();
+  const limiter = createRateLimiter({ max: RATE_LIMIT_MAX, windowMs: RATE_LIMIT_WINDOW_MS });
+  /* Por documento: quem troca de IP a cada pedido não deve poder encher a caixa
+     de e-mail de um cliente nem testar e-mails contra um CPF. */
+  const taxIdLimiter = createRateLimiter({ max: RATE_LIMIT_MAX, windowMs: RATE_LIMIT_WINDOW_MS });
   const configured = Boolean(licensing.baseUrl && licensing.serviceKey);
 
-  function enforceRateLimit(clientKey) {
-    const now = Date.now();
-    const cutoff = now - RATE_LIMIT_WINDOW_MS;
-    for (const [key, timestamps] of recentByClient) {
-      const fresh = timestamps.filter((instant) => instant > cutoff);
-      if (fresh.length === 0) recentByClient.delete(key);
-      else recentByClient.set(key, fresh);
-    }
-    const recent = recentByClient.get(clientKey) ?? [];
-    if (recent.length >= RATE_LIMIT_MAX) {
-      throw tooManyRequests(
-        'Você pediu vários links agora há pouco. Confira o e-mail ou aguarde alguns minutos.'
-      );
-    }
-    recentByClient.set(clientKey, [...recent, now]);
+  function enforceRateLimit(clientKey, taxId) {
+    const message =
+      'Você pediu vários links agora há pouco. Confira o e-mail ou aguarde alguns minutos.';
+    if (!limiter.hit(clientKey)) throw tooManyRequests(message);
+    if (!taxIdLimiter.hit(taxId)) throw tooManyRequests(message);
   }
 
   async function callApi(path, payload) {
@@ -50,7 +44,12 @@ export function accountService({ fetchImpl = fetch, licensing = config.licensing
 
     const base = licensing.baseUrl.endsWith('/') ? licensing.baseUrl : `${licensing.baseUrl}/`;
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), licensing.timeoutMs);
+    const timeout = setTimeout(
+      () => controller.abort(),
+      Number.isFinite(licensing.timeoutMs) && licensing.timeoutMs > 0
+        ? licensing.timeoutMs
+        : DEFAULT_TIMEOUT_MS
+    );
     try {
       return await fetchImpl(new URL(path, base), {
         method: 'POST',
@@ -74,7 +73,7 @@ export function accountService({ fetchImpl = fetch, licensing = config.licensing
     if (!isValidTaxId(input.taxId)) validator.fail('taxId', 'Confira o CPF ou o CNPJ.');
     validator.email('email', input.email);
     validator.assert();
-    enforceRateLimit(clientKey);
+    enforceRateLimit(clientKey, onlyDigits(input.taxId));
 
     const response = await callApi('api/v1/site/account/access-link', {
       taxId: onlyDigits(input.taxId),

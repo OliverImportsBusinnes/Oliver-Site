@@ -8,6 +8,7 @@ import { formatBRL } from '../../shared/plan.js';
 import { formatTaxId, isValidTaxId } from '../../shared/taxId.js';
 import { createWhatsAppLink, whatsappLinkProps } from '../utils/contact.js';
 import { WHATSAPP_MESSAGES } from '../data/company.js';
+import { readAccessHash, shouldDiscardToken } from '../utils/accessToken.js';
 
 /* =========================================================================
    Minha licença — área do cliente comprador.
@@ -60,10 +61,11 @@ function storeToken(token) {
 
 /** Lê o token do "#acesso=..." e limpa a barra de endereço. */
 function takeTokenFromHash() {
-  const match = window.location.hash.match(/acesso=([^&]+)/);
-  if (!match) return null;
+  if (!/acesso=/.test(window.location.hash)) return null;
+  /* Limpa a barra mesmo se o token for ilegível; token inválido = sem token. */
+  const token = readAccessHash(window.location.hash);
   window.history.replaceState(null, '', window.location.pathname);
-  return decodeURIComponent(match[1]);
+  return token;
 }
 
 function formatDate(value) {
@@ -88,7 +90,12 @@ export default function MyLicense() {
   useEffect(() => {
     function onHashChange() {
       const fromHash = takeTokenFromHash();
-      if (fromHash) setToken(fromHash);
+      if (fromHash) {
+        /* Outro link: o resumo da licença anterior não vale mais. */
+        setSummary(null);
+        setNotice(null);
+        setToken(fromHash);
+      }
     }
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
@@ -107,13 +114,16 @@ export default function MyLicense() {
       })
       .catch((failure) => {
         if (!active) return;
-        storeToken(null);
-        setToken(null);
-        setNotice(
-          failure instanceof ApiError && failure.status === 401
-            ? 'Este link venceu ou não é válido. Peça um novo abaixo.'
-            : failure.message ?? 'Não foi possível abrir agora.'
-        );
+        setSummary(null);
+        if (shouldDiscardToken(failure)) {
+          storeToken(null);
+          setToken(null);
+          setNotice('Este link venceu ou não é válido. Peça um novo abaixo.');
+          return;
+        }
+        /* Rede, 503, timeout: o token pode estar ótimo. Mantém guardado e
+           deixa tentar de novo (recarregar a página). */
+        setNotice('Não conseguimos abrir a sua licença agora. Recarregue a página para tentar de novo.');
       })
       .finally(() => active && setLoading(false));
     return () => {

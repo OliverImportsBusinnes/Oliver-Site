@@ -46,9 +46,9 @@ services:
       - key: DATABASE_URL
         sync: false
 
-      # Assina os identificadores de sessão. Trocar o valor derruba todo mundo
-      # que estiver logado — por isso é definida à mão e guardada, e não
-      # gerada a cada serviço.
+      # Reservado e OPCIONAL: hoje nada o usa. A sessão é um token aleatório
+      # guardado (como hash) no banco, não um valor assinado com este segredo.
+      # Pode ficar em branco; a chave existe para um uso futuro.
       - key: SESSION_SECRET
         sync: false
 
@@ -75,6 +75,12 @@ services:
       # de licenciamento — as duas pontas comparam o mesmo valor. Preencher só
       # uma das duas variáveis de licenciamento derruba o start, de propósito.
       - key: SITE_SERVICE_API_KEY
+        sync: false
+
+      # URL pública do site, com https e sem barra final. A compra a usa para
+      # dizer ao Mercado Pago para onde levar o cliente depois de pagar
+      # (/obrigado). Sem ela, POST /api/checkout responde 503.
+      - key: SITE_PUBLIC_URL
         sync: false
 
       # Endereço público usado em canonical, Open Graph e Twitter Card. É lido

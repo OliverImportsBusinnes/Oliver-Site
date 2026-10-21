@@ -11,15 +11,27 @@
    limite por visitante, e erro genérico quando a API central falha.
    ========================================================================= */
 
-import { config, LIMITS } from '../config.js';
+import { config, LIMITS, DEFAULT_TIMEOUT_MS } from '../config.js';
 import { AppError, badRequest, tooManyRequests } from '../http/errors.js';
 import { createValidator } from '../http/validation.js';
+import { createRateLimiter } from '../http/rateLimit.js';
+import { safeFieldErrors } from '../http/fieldErrors.js';
 import { isValidTaxId, onlyDigits } from '../../shared/taxId.js';
 import { PLAN } from '../../shared/plan.js';
 
 /* Cada pedido válido cria um cliente e uma cobrança do outro lado, então o
    limite é mais apertado que o do orçamento. Em memória, pelo mesmo motivo
    documentado em quoteRequests.js. */
+const FIELDS = [
+  'companyName',
+  'contactName',
+  'taxId',
+  'email',
+  'phone',
+  'devices',
+  'acceptTerms',
+];
+
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 
@@ -27,12 +39,16 @@ const UNAVAILABLE =
   'A compra online está indisponível agora. Fale com a gente pelo WhatsApp e ' +
   'resolvemos por lá.';
 
+/** Timeout inválido (NaN, zero, negativo) cairia em abort imediato: usa o padrão. */
+const validTimeout = (value) =>
+  Number.isFinite(value) && value > 0 ? value : DEFAULT_TIMEOUT_MS;
+
 export function checkoutService({
   fetchImpl = fetch,
   licensing = config.licensing,
   publicUrl = config.site.publicUrl,
 } = {}) {
-  const recentByClient = new Map();
+  const limiter = createRateLimiter({ max: RATE_LIMIT_MAX, windowMs: RATE_LIMIT_WINDOW_MS });
 
   const configured = Boolean(licensing.baseUrl && licensing.serviceKey);
 
@@ -61,23 +77,12 @@ export function checkoutService({
   }
 
   function enforceRateLimit(clientKey) {
-    const now = Date.now();
-    const cutoff = now - RATE_LIMIT_WINDOW_MS;
-
-    for (const [key, timestamps] of recentByClient) {
-      const fresh = timestamps.filter((instant) => instant > cutoff);
-      if (fresh.length === 0) recentByClient.delete(key);
-      else recentByClient.set(key, fresh);
-    }
-
-    const recent = recentByClient.get(clientKey) ?? [];
-    if (recent.length >= RATE_LIMIT_MAX) {
+    if (!limiter.hit(clientKey)) {
       throw tooManyRequests(
         'Você já tentou comprar várias vezes agora há pouco. Aguarde alguns ' +
           'minutos ou fale com a gente pelo WhatsApp.'
       );
     }
-    recentByClient.set(clientKey, [...recent, now]);
   }
 
   function validate(input) {
@@ -135,7 +140,7 @@ export function checkoutService({
     );
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), licensing.timeoutMs);
+    const timeout = setTimeout(() => controller.abort(), validTimeout(licensing.timeoutMs));
 
     let response;
     try {
@@ -180,10 +185,7 @@ export function checkoutService({
     }
 
     if (response.status === 400) {
-      throw badRequest(
-        body.detail ?? 'Confira os campos destacados.',
-        body.errors ?? null
-      );
+      throw badRequest('Confira os campos destacados.', safeFieldErrors(body.errors, FIELDS));
     }
     /* Documento que já tem cadastro: o texto da API já diz o que fazer (falar
        pelo WhatsApp) e não revela nada além de "este documento existe", que o
@@ -192,8 +194,7 @@ export function checkoutService({
       throw new AppError(
         409,
         'DOCUMENTO_JA_CADASTRADO',
-        body.detail ??
-          'Este CPF ou CNPJ já tem cadastro. Fale com a gente pelo WhatsApp.'
+        'Este CPF ou CNPJ já tem cadastro. Fale com a gente pelo WhatsApp.'
       );
     }
 

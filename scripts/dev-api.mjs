@@ -14,6 +14,7 @@ import './env.mjs'; // precisa vir antes de config.js
 import { LIMITS } from '../server/config.js';
 import { getDb } from '../server/db/index.js';
 import { createApp } from '../server/app.js';
+import { lerCorpo } from '../server/http/static.js';
 
 const PORT = Number(process.env.API_PORT ?? 8788);
 
@@ -32,22 +33,18 @@ const app = createApp(db, {
   ],
 });
 
-const readBody = (request) =>
-  new Promise((resolve) => {
-    let raw = '';
-    request.on('data', (chunk) => {
-      raw += chunk;
-      /* Corpo absurdo é cortado antes de consumir memória. */
-      if (raw.length > MAX_BODY_BYTES) request.destroy();
-    });
-    request.on('end', () => resolve(raw));
-    request.on('error', () => resolve(''));
-  });
-
 const server = createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://localhost:${PORT}`);
-    const raw = await readBody(request);
+    const { body: raw, tooLarge } = await lerCorpo(request, MAX_BODY_BYTES);
+
+    if (tooLarge) {
+      response.writeHead(413, { 'Content-Type': 'application/json', Connection: 'close' });
+      response.end(
+        JSON.stringify({ error: 'CORPO_GRANDE_DEMAIS', message: 'Corpo grande demais.' })
+      );
+      return;
+    }
 
     let body = {};
     if (raw) {
@@ -67,6 +64,7 @@ const server = createServer(async (request, response) => {
       path: url.pathname,
       query: Object.fromEntries(url.searchParams),
       headers: request.headers,
+      remoteAddress: request.socket.remoteAddress,
       body,
     });
 

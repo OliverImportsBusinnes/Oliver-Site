@@ -21,12 +21,13 @@
 
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
-import { extname, join, normalize, resolve, sep } from 'node:path';
+import { extname, join, resolve } from 'node:path';
 import { LIMITS, assertProductionConfig } from './server/config.js';
 import { getDb } from './server/db/index.js';
 import { createApp } from './server/app.js';
 import { normalizeApiPath } from './server/http/path.js';
 import { applySeo } from './shared/seo.js';
+import { caminhoEstatico, lerCorpo, statusDaSpa } from './server/http/static.js';
 
 const PORT = Number(process.env.PORT ?? 8080);
 const HOST = process.env.HOST ?? '0.0.0.0';
@@ -121,29 +122,6 @@ const app = createApp(db, { allowedOrigins });
 
 /* ------------------------------------------------------------------ auxiliares */
 
-const lerCorpo = (request) =>
-  new Promise((resolve) => {
-    let bruto = '';
-    request.on('data', (pedaco) => {
-      bruto += pedaco;
-      if (bruto.length > MAX_BODY_BYTES) request.destroy();
-    });
-    request.on('end', () => resolve(bruto));
-    request.on('error', () => resolve(''));
-  });
-
-/**
- * Resolve o caminho pedido DENTRO de `dist`. Devolve null para qualquer
- * tentativa de sair da pasta (`../`), que é a defesa contra path traversal.
- */
-function caminhoEstatico(pathname) {
-  const decodificado = decodeURIComponent(pathname);
-  const alvo = resolve(join(DIST, normalize(decodificado)));
-
-  if (alvo !== DIST && !alvo.startsWith(DIST + sep)) return null;
-  return alvo;
-}
-
 async function enviarArquivo(response, caminho, { status = 200, imutavel = false } = {}) {
   const conteudo = await readFile(caminho);
 
@@ -170,7 +148,22 @@ const server = createServer(async (request, response) => {
 
     /* ------------------------------------------------------------------ API */
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {
-      const bruto = await lerCorpo(request);
+      const { body: bruto, tooLarge } = await lerCorpo(request, MAX_BODY_BYTES);
+
+      if (tooLarge) {
+        response.writeHead(413, {
+          ...SEGURANCA,
+          'Content-Type': 'application/json; charset=utf-8',
+          Connection: 'close',
+        });
+        response.end(
+          JSON.stringify({
+            error: 'CORPO_GRANDE_DEMAIS',
+            message: 'O corpo da requisição passa do tamanho permitido.',
+          })
+        );
+        return;
+      }
 
       let body = {};
       if (bruto) {
@@ -196,6 +189,7 @@ const server = createServer(async (request, response) => {
         path: normalizeApiPath(url.pathname),
         query: Object.fromEntries(url.searchParams),
         headers: request.headers,
+        remoteAddress: request.socket.remoteAddress,
         body,
       });
 
@@ -227,7 +221,13 @@ const server = createServer(async (request, response) => {
       return;
     }
 
-    const caminho = caminhoEstatico(url.pathname);
+    const caminho = caminhoEstatico(DIST, url.pathname);
+    if (caminho === undefined) {
+      /* Percent-encoding inválido (%E0%A4%A): pedido malformado, não falha nossa. */
+      response.writeHead(400, SEGURANCA);
+      response.end();
+      return;
+    }
     if (!caminho) {
       response.writeHead(400);
       response.end();
@@ -243,13 +243,23 @@ const server = createServer(async (request, response) => {
       return;
     }
 
+    /* Caminho com extensão (/assets/x.js, /favicon.ico) que não existe: 404 sem
+       o HTML do app, senão o navegador tentaria rodar HTML como script. */
+    const status = statusDaSpa(url.pathname);
+    if (extname(url.pathname)) {
+      response.writeHead(404, { ...SEGURANCA, 'Content-Type': 'text/plain; charset=utf-8' });
+      response.end('Não encontrado.');
+      return;
+    }
+
     /* Single-page app: qualquer outra rota é do React Router, então devolve o
-       index.html — mas com 200 só quando faz sentido. O título, a descrição e o
+       index.html — com 404 quando a rota não existe (o React mostra a página
+       404 usando este mesmo HTML). O título, a descrição e o
        canonical já saem com os da rota (P-008), para buscadores e prévias de
        link que não rodam JavaScript. */
     const html = applySeo(await readFile(join(DIST, 'index.html'), 'utf8'), url.pathname);
     const corpo = Buffer.from(html, 'utf8');
-    response.writeHead(200, {
+    response.writeHead(status, {
       ...SEGURANCA,
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Length': corpo.length,

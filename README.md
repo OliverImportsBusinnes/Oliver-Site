@@ -261,7 +261,7 @@ Em *Environment → Environment Variables*:
 |---|---|
 | `DATABASE_DRIVER` | `postgres` |
 | `DATABASE_URL` | a URI *pooled* copiada do Neon |
-| `SESSION_SECRET` | valor aleatório longo (veja abaixo) |
+| `SESSION_SECRET` | opcional e reservado: hoje nada o usa (veja abaixo) |
 | `NODE_ENV` | `production` (liga o `Secure` no cookie) |
 | `NODE_VERSION` | `22` |
 | `VITE_COMPANY_EMAIL` | seu e-mail de contato |
@@ -269,8 +269,9 @@ Em *Environment → Environment Variables*:
 | `ALLOWED_ORIGINS` | opcional — veja abaixo |
 | `LICENSING_API_BASE_URL` | endereço da API Oliver Licensing |
 | `SITE_SERVICE_API_KEY` | credencial de serviço — a mesma dos dois lados |
+| `SITE_PUBLIC_URL` | URL pública com https, sem barra final — sem ela a compra responde 503 |
 
-Gerar o `SESSION_SECRET`:
+Gerar o `SESSION_SECRET` (opcional; a sessão não depende dele):
 
 ```bash
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
