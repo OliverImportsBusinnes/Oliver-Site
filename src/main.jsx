@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
+/* Inter (licença OFL) servida pelo próprio site: o CSP só permite fonte de 'self' (P-002). */
+import '@fontsource-variable/inter';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/components.css';

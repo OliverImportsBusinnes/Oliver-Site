@@ -76,7 +76,7 @@
   --shadow-md: 0 18px 40px -18px rgba(var(--shadow-rgb), calc(0.8 * var(--shadow-k)));
 
   /* ---- Tipografia ---- */
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+  --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
     Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Mono", Menlo,
     Consolas, monospace;

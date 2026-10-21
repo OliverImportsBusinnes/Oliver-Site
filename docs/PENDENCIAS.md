@@ -22,25 +22,29 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). A área do comprador também existe
   (`/minha-licenca`, P-009). Falta a prova da compra de ponta a ponta com o Mercado Pago (P-005 e `docs/COMPRA_AUTOMATICA.md`).
 
-- **P-002** · 2026-10-19 · **A fonte Inter nunca carrega.** O motivo está em dois arquivos:
-  - `src/styles/tokens.css` declara `"Inter"`, mas não há `@font-face` nem arquivo de fonte no projeto;
-  - o CSP de `server.js` só permite `font-src 'self'`.
 
   Resultado: o site sempre mostra a fonte do sistema.
 - **P-005** · 2026-10-19 · **O formulário de orçamento nunca foi provado de ponta a ponta.** O teste completo é:
   pedido enviado pelo site → `201` da API de licenças → pedido visível na tela Orçamentos do painel. Esse teste é a
   fase 1 de `Panel-Desktop/docs/CRONOGRAMA.md` e não tem registro de execução.
+  **Andamento (21/10/2026):** as duas primeiras partes foram provadas com o servidor do site local (`node server.js`) e a
+  API local (`Panel-Desktop/deploy/local/api-local.sh`): o formulário da home enviou o pedido, o site respondeu `201` e o
+  pedido ficou gravado no banco central (`solicitacoes_orcamento`, id 11, origem `Site`). Falta vê-lo na tela Orçamentos
+  do painel (P-005 do painel, janela real contra a API local).
 
-- **P-008** · 2026-10-19 · **Todas as páginas têm o mesmo título e a mesma descrição.** `index.html` fixa o `<title>` do portfólio;
-  `/comprar`, `/baixar`, `/termos` e `/privacidade` deveriam ter título próprio, e o texto de SEO da home ainda fala de
-  desenvolvimento de software sob medida.
-  **Recomendação (19/10/2026):** um título e uma descrição por rota, definidos num só lugar (`src/data/seo.js`) e
-  aplicados por um componente pequeno que troca `document.title`, a `meta description` e o `canonical` quando a rota
-  muda. O `index.html` passa a vender o produto. Para o Google enxergar o título certo sem rodar JavaScript, o
-  servidor Node pode trocar o `<title>` do HTML por rota antes de enviar (custo baixo, sem mudar de framework).
 
 ## Resolvidas
 
+- **P-002** · aberta em 2026-10-19 · resolvida em 2026-10-21 · A fonte Inter nunca carregava → o dono autorizou baixar a
+  Inter (OFL); entrou pelo pacote `@fontsource-variable/inter` 5.3.0 (versão exata), importado em `src/main.jsx`, e o
+  `--font-sans` passou a começar por `"Inter Variable"`. O build gera os `.woff2` em `dist/assets`, servidos pelo próprio
+  site como `font/woff2`, então o CSP `font-src 'self'` não precisou mudar. Conferido no navegador com o servidor local:
+  `document.fonts` mostra "Inter Variable 100 900" carregada e o `body` usa a Inter.
+- **P-008** · aberta em 2026-10-19 · resolvida em 2026-10-21 · Mesmo título em todas as páginas → título e descrição por
+  rota em `shared/seo.js` (aprovado pelo dono), aplicados no navegador por `src/app/RouteSeo.jsx` e no HTML enviado pelo
+  `server.js`; conta, painel e 404 com `noindex`; o `index.html` passou a vender o Oliver Inventory. Conferido: 5 testes
+  em `tests/seo.test.js`, `curl` de `/comprar` devolve o título e o canonical da rota, e no navegador a navegação interna
+  de `/termos` para `/comprar` troca título, descrição e canonical. Suíte do site: 162 de 162.
 - **P-004** · aberta em 2026-10-19 · resolvida em 2026-10-20 · README e `scripts/dev-api.mjs` desatualizados → README
   com as rotas da loja, o produto como conteúdo principal, o portfólio vindo do admin e o aviso do destino na VPS; a nota
   de que a integração "não está no GitHub" saiu; o script não fala mais da Netlify Function.
@@ -58,5 +62,3 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   `/minha-licenca` com link de acesso por e-mail (30 min) e resumo da licença, rotas `/api/account/*` no site e
   `/api/v1/site/account/*` na API. Testes: 7 no site, 15 na API (token adulterado, vencido, de outra chave). Conferida
   no navegador com API falsa. A prova com API, banco e e-mail reais fica no P-016 do painel.
-
-Nenhuma ainda.

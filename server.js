@@ -26,6 +26,7 @@ import { LIMITS, assertProductionConfig } from './server/config.js';
 import { getDb } from './server/db/index.js';
 import { createApp } from './server/app.js';
 import { normalizeApiPath } from './server/http/path.js';
+import { applySeo } from './shared/seo.js';
 
 const PORT = Number(process.env.PORT ?? 8080);
 const HOST = process.env.HOST ?? '0.0.0.0';
@@ -243,8 +244,18 @@ const server = createServer(async (request, response) => {
     }
 
     /* Single-page app: qualquer outra rota é do React Router, então devolve o
-       index.html — mas com 200 só quando faz sentido. */
-    await enviarArquivo(response, join(DIST, 'index.html'));
+       index.html — mas com 200 só quando faz sentido. O título, a descrição e o
+       canonical já saem com os da rota (P-008), para buscadores e prévias de
+       link que não rodam JavaScript. */
+    const html = applySeo(await readFile(join(DIST, 'index.html'), 'utf8'), url.pathname);
+    const corpo = Buffer.from(html, 'utf8');
+    response.writeHead(200, {
+      ...SEGURANCA,
+      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Length': corpo.length,
+      'Cache-Control': 'no-cache',
+    });
+    response.end(corpo);
   } catch (error) {
     console.error('[server] falha:', error?.message);
     if (!response.headersSent) {

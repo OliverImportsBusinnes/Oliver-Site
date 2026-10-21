@@ -83,6 +83,10 @@ export const COMPANY_NAME = 'Oliver Imports';     // ← nome da empresa
 | `.env` / Render | `VITE_SITE_URL` com o endereço público (canonical e Open Graph) |
 | `src/data/projects.js` | Prints reais dos sistemas e o campo `link` de cada projeto |
 
+Os títulos e descrições por rota ficam em `shared/seo.js`: o componente `src/app/RouteSeo.jsx` troca o `<head>` quando
+a rota muda, e o `server.js` aplica o mesmo texto no `index.html` antes de enviar. Conta, painel e página inexistente
+recebem `noindex`.
+
 O `index.html` **não** tem URL escrita à mão: o marcador `__SITE_URL__` é
 trocado no build pelo valor de `VITE_SITE_URL` (ver `vite.config.js`). Ligou um
 domínio próprio? Muda a variável no Render e refaz o deploy — nenhum arquivo
@@ -144,6 +148,7 @@ espaçamentos, raios e transições saem todos de `tokens.css`.
 |---|---|
 | `src/data/company.js` | Nome, e-mail, WhatsApp, mensagens, menu |
 | `src/data/product.js` e `shared/plan.js` | O produto à venda, o que ele faz e o preço |
+| `shared/seo.js` | Título e descrição de cada rota (o navegador troca ao navegar; o `server.js` já entrega o HTML com os da rota pedida, para buscadores) |
 | `/admin/projetos` | Portfólio exibido na home (destaque = `featured`); sem nenhum projeto público, a home usa `src/data/projects.js` |
 | `src/data/capabilities.js` | "O que desenvolvemos" |
 | `src/data/process.js` | "Como trabalhamos" |
@@ -415,6 +420,9 @@ lidas em `server/config.js`. Veja o `.env.example`.
   flutuante e animações de entrada.
 - Efeitos de cursor só em ponteiro fino — no celular nem são registrados.
 - Imagens com `loading="lazy"`, dimensões definidas e `alt` descritivo.
+- Fonte Inter (licença OFL) servida pelo próprio site, pelo pacote `@fontsource-variable/inter`, importado em
+  `src/main.jsx`. O build copia os arquivos `.woff2` para `dist/assets` e o navegador baixa só os alfabetos que a
+  página usa. Nenhuma fonte vem de fora: o CSP continua com `font-src 'self'`.
 
 ---
 
