@@ -85,7 +85,8 @@ export const COMPANY_NAME = 'Oliver Imports';     // ← nome da empresa
 
 Os títulos e descrições por rota ficam em `shared/seo.js`: o componente `src/app/RouteSeo.jsx` troca o `<head>` quando
 a rota muda, e o `server.js` aplica o mesmo texto no `index.html` antes de enviar. Conta, painel e página inexistente
-recebem `noindex`.
+recebem `noindex`. O caminho é comparado como o React Router compara (sem barra final e sem diferenciar maiúsculas:
+`/Comprar` é `/comprar`), e na navegação interna o `canonical` e o `og:url` acompanham a rota (`seoHeadFor`).
 
 O `index.html` **não** tem URL escrita à mão: o marcador `__SITE_URL__` é
 trocado no build pelo valor de `VITE_SITE_URL` (ver `vite.config.js`). Ligou um

@@ -12,6 +12,7 @@
 import { assertProductionConfig } from '../../server/config.js';
 import { getDb } from '../../server/db/index.js';
 import { createApp } from '../../server/app.js';
+import { parseAllowedOrigins } from '../../server/http/origins.js';
 import { normalizeApiPath } from '../../server/http/path.js';
 
 /* Reaproveitados entre invocações na mesma instância (evita reconectar). */
@@ -23,10 +24,8 @@ async function getApp() {
       assertProductionConfig();
       const db = await getDb();
 
-      const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? '')
-        .split(',')
-        .map((origin) => origin.trim())
-        .filter(Boolean);
+      /* Mesma regra do server.js: sem barra final e, em produção, sem origem = falha fechado. */
+      const allowedOrigins = parseAllowedOrigins(process.env, { exigir: true });
 
       return createApp(db, { allowedOrigins });
     })().catch((error) => {

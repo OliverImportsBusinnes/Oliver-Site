@@ -26,6 +26,7 @@ import { LIMITS, assertProductionConfig } from './server/config.js';
 import { getDb } from './server/db/index.js';
 import { createApp } from './server/app.js';
 import { normalizeApiPath } from './server/http/path.js';
+import { parseAllowedOrigins } from './server/http/origins.js';
 import { applySeo } from './shared/seo.js';
 import { caminhoEstatico, lerCorpo, statusDaSpa } from './server/http/static.js';
 
@@ -96,27 +97,7 @@ const db = await getDb();
    A barra final é removida: o navegador manda `Origin: https://site.com`, sem
    barra, então `https://site.com/` na configuração nunca casaria — e a falha
    apareceria como um 403 no login, sem pista nenhuma da causa. */
-const allowedOrigins = [
-  ...(process.env.ALLOWED_ORIGINS ?? '').split(','),
-  process.env.RENDER_EXTERNAL_URL ?? '',
-]
-  .map((origin) => origin.trim().replace(/\/+$/, ''))
-  .filter(Boolean)
-  .filter((origin, indice, lista) => lista.indexOf(origin) === indice);
-
-/* Fail-closed: em produção, lista vazia significa que a conferência de Origin
-   não roda em rota nenhuma (ver server/app.js). Derrubar o boot deixa isso
-   visível no log do Render; seguir em frente seria uma proteção a menos que
-   ninguém notaria. */
-if (!allowedOrigins.length) {
-  const aviso =
-    'ALLOWED_ORIGINS vazio e RENDER_EXTERNAL_URL ausente: a conferência de ' +
-    'Origin (defesa de CSRF) ficaria desligada. Defina ALLOWED_ORIGINS com a ' +
-    'URL pública do site, sem barra final.';
-
-  if (process.env.NODE_ENV === 'production') throw new Error(`[server] ${aviso}`);
-  console.warn(`[server] ${aviso}`);
-}
+const allowedOrigins = parseAllowedOrigins(process.env, { exigir: true });
 
 const app = createApp(db, { allowedOrigins });
 

@@ -48,9 +48,14 @@ const PRIVATE = [
 
 const NOT_FOUND = { title: `Página não encontrada | ${COMPANY}`, description: PUBLIC['/'].description, noindex: true, notFound: true };
 
+/** Caminho normalizado como o React Router: sem barra final e sem diferenciar maiúsculas. */
+export function normalizeSeoPath(pathname) {
+  return (pathname || '/').replace(/\/+$/, '').toLowerCase() || '/';
+}
+
 /** Título, descrição e se a página fica fora dos buscadores, para um caminho. */
 export function seoFor(pathname) {
-  const path = (pathname || '/').replace(/\/+$/, '') || '/';
+  const path = normalizeSeoPath(pathname);
   if (PUBLIC[path]) return { ...PUBLIC[path], noindex: false };
   const privado = PRIVATE.find(([prefix]) => path === prefix || path.startsWith(`${prefix}/`));
   if (privado) return { title: privado[1], description: PUBLIC['/'].description, noindex: true };
@@ -67,7 +72,7 @@ const escapeHtml = (text) =>
  */
 export function applySeo(html, pathname) {
   const seo = seoFor(pathname);
-  const path = (pathname || '/').replace(/\/+$/, '') || '/';
+  const path = normalizeSeoPath(pathname);
   const title = escapeHtml(seo.title);
   const description = escapeHtml(seo.description);
   const pathAttr = escapeHtml(path === '/' ? '/' : path);
@@ -82,4 +87,15 @@ export function applySeo(html, pathname) {
     .replace(/(<meta\s+property="og:url"\s+content="[^"]*?)\/?(")/, (_, abre, fecha) => `${abre}${pathAttr}${fecha}`);
   if (seo.noindex) out = out.replace('</head>', '  <meta name="robots" content="noindex" />\n  </head>');
   return out;
+}
+
+/** Dados do <head> da rota para a navegação interna (SPA): mesma regra do applySeo, sem tocar no DOM. */
+export function seoHeadFor(pathname, baseUrl) {
+  const seo = seoFor(pathname);
+  return {
+    title: seo.title,
+    description: seo.description,
+    robots: seo.noindex ? 'noindex' : 'index, follow',
+    url: `${baseUrl}${normalizeSeoPath(pathname)}`,
+  };
 }

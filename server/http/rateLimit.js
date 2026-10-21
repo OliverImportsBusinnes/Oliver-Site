@@ -6,6 +6,10 @@
    a sua — aceitável para conter spam de formulário e força bruta barata,
    insuficiente para ataque distribuído (problema da camada de rede).
 
+   ATENÇÃO: o estado é POR PROCESSO/INSTÂNCIA (um Map na memória). Em funções
+   serverless (Netlify) cada instância fria tem o seu e o limite efetivo é
+   multiplicado pelo número de instâncias; não é compartilhado nem persistido.
+
    O mapa tem teto (`maxKeys`): sem ele, quem forja chaves novas a cada pedido
    (documentos diferentes, por exemplo) faria a memória crescer sem limite.
    ========================================================================= */

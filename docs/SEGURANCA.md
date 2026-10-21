@@ -15,6 +15,9 @@ bugs que achou e corrigiu os itens marcados com a data.
     caixa de um cliente trocando de endereço;
   - login: 20 por 10 minutos por endereço; cadastro: 10 por 10 minutos (o scrypt é caro de propósito e, sem teto,
     poucas requisições travavam o processo). O bloqueio de 15 minutos por e-mail depois de 5 senhas erradas continua.
+  - os limites ficam num `Map` por processo: somem num reinício e não se somam entre instâncias. Com um processo só na
+    VPS isso basta; numa função serverless (Netlify) cada instância fria teria o seu e o limite efetivo se multiplica.
+    As janelas vencidas são varridas e o teto de chaves vale (teste `tests/seo-rota.test.js`, 21/10/2026).
 
 ## Erros da API de licenciamento
 
@@ -35,6 +38,11 @@ subdomínios; `src/utils/checkoutUrl.js`).
 - O título, a descrição e o endereço canônico de cada página são escapados; `$` no caminho não corrompe mais o HTML.
 
 ## Configuração
+
+- `ALLOWED_ORIGINS` (lista separada por vírgula) e `RENDER_EXTERNAL_URL` formam as origens aceitas na conferência de
+  `Origin` (defesa de CSRF). `server/http/origins.js` tira espaços, barra final e repetidos, e é usado pelo `server.js` e
+  pela função do Netlify (antes a função não tirava a barra final, e `https://site.com/` nunca casava). Em produção, lista
+  vazia derruba a subida nos dois caminhos.
 
 - `SITE_PUBLIC_URL` é obrigatória para a compra (sem ela `/comprar` responde 503); está no `render.yaml`.
 - `SESSION_SECRET` não é exigida: as sessões são tokens aleatórios com hash no banco, e o segredo não assina nada.

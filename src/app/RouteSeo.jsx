@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { seoFor } from '../../shared/seo.js';
+import { seoHeadFor } from '../../shared/seo.js';
 
 /** Acha (ou cria) uma <meta>/<link> do <head> pelo seletor e devolve o elemento. */
 function headTag(selector, create) {
@@ -21,7 +21,9 @@ export default function RouteSeo() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const seo = seoFor(pathname);
+    const canonical = document.head.querySelector('link[rel="canonical"]');
+    const base = new URL(canonical?.getAttribute('href') || '/', window.location.origin).origin;
+    const seo = seoHeadFor(pathname, base);
     document.title = seo.title;
     for (const selector of ['meta[name="description"]', 'meta[property="og:description"]', 'meta[name="twitter:description"]']) {
       document.head.querySelector(selector)?.setAttribute('content', seo.description);
@@ -30,18 +32,15 @@ export default function RouteSeo() {
       document.head.querySelector(selector)?.setAttribute('content', seo.title);
     }
 
-    const canonical = document.head.querySelector('link[rel="canonical"]');
-    if (canonical) {
-      const base = new URL(canonical.getAttribute('href') || '/', window.location.origin).origin;
-      canonical.setAttribute('href', `${base}${pathname === '/' ? '/' : pathname.replace(/\/+$/, '')}`);
-    }
+    canonical?.setAttribute('href', seo.url);
+    document.head.querySelector('meta[property="og:url"]')?.setAttribute('content', seo.url);
 
     const robots = headTag('meta[name="robots"]', () => {
       const meta = document.createElement('meta');
       meta.setAttribute('name', 'robots');
       return meta;
     });
-    robots.setAttribute('content', seo.noindex ? 'noindex' : 'index, follow');
+    robots.setAttribute('content', seo.robots);
   }, [pathname]);
 
   return null;
