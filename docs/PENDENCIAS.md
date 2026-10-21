@@ -22,9 +22,6 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
   `/obrigado`, `/baixar`, `/termos` e `/privacidade` (ver `docs/LOJA_E_COMPRA.md`). A área do comprador também existe
   (`/minha-licenca`, P-009). Falta a prova da compra de ponta a ponta com o Mercado Pago (P-005 e `docs/COMPRA_AUTOMATICA.md`).
 
-
-  Resultado: o site sempre mostra a fonte do sistema.
-
 ## Resolvidas
 
 - **P-010** · aberta em 2026-10-21 · resolvida em 2026-10-21 · Achados baixos da varredura no site → `RouteSeo`
