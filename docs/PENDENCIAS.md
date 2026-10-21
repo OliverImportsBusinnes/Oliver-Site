@@ -24,17 +24,14 @@ Registro único de tudo o que ficou para depois neste projeto. Uma pendência re
 
 
   Resultado: o site sempre mostra a fonte do sistema.
-- **P-005** · 2026-10-19 · **O formulário de orçamento nunca foi provado de ponta a ponta.** O teste completo é:
-  pedido enviado pelo site → `201` da API de licenças → pedido visível na tela Orçamentos do painel. Esse teste é a
-  fase 1 de `Panel-Desktop/docs/CRONOGRAMA.md` e não tem registro de execução.
-  **Andamento (21/10/2026):** as duas primeiras partes foram provadas com o servidor do site local (`node server.js`) e a
-  API local (`Panel-Desktop/deploy/local/api-local.sh`): o formulário da home enviou o pedido, o site respondeu `201` e o
-  pedido ficou gravado no banco central (`solicitacoes_orcamento`, id 11, origem `Site`). Falta vê-lo na tela Orçamentos
-  do painel (P-005 do painel, janela real contra a API local).
 
 
 ## Resolvidas
 
+- **P-005** · aberta em 2026-10-19 · resolvida em 2026-10-21 · Formulário de orçamento nunca provado de ponta a ponta →
+  provado com o servidor do site local e a API local: o formulário da home enviou o pedido, o site respondeu `201`, o
+  pedido ficou no banco central (`solicitacoes_orcamento`, id 11, origem `Site`) e apareceu na tela Orçamentos do painel
+  real (roteiro `--real` da `.visual-validation` do painel, que achou "#11 Teste P-005 Site (Site)" na lista).
 - **P-002** · aberta em 2026-10-19 · resolvida em 2026-10-21 · A fonte Inter nunca carregava → o dono autorizou baixar a
   Inter (OFL); entrou pelo pacote `@fontsource-variable/inter` 5.3.0 (versão exata), importado em `src/main.jsx`, e o
   `--font-sans` passou a começar por `"Inter Variable"`. O build gera os `.woff2` em `dist/assets`, servidos pelo próprio
