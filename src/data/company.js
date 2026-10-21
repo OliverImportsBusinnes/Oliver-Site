@@ -25,11 +25,11 @@ export const EMAIL =
 export const COMPANY_NAME = 'Oliver Imports';
 
 /**
- * Razão social que aparece nos Termos de uso e na Política de privacidade.
- * Enquanto não for informada, usa o nome da empresa. CNPJ e endereço ainda não
- * existem: quando existirem, entram aqui (LEGAL_TAX_ID, LEGAL_ADDRESS) e nos textos.
+ * Razão social que aparece nos Termos de uso e na Política de privacidade
+ * (informada pelo dono em 20/10/2026). CNPJ e endereço ainda não existem:
+ * quando existirem, entram aqui (LEGAL_TAX_ID, LEGAL_ADDRESS) e nos textos.
  */
-export const LEGAL_NAME = COMPANY_NAME;
+export const LEGAL_NAME = 'Nexus Soluções Tecnológicas Ltda';
 
 export const company = {
   name: COMPANY_NAME,

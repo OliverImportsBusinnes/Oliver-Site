@@ -24,7 +24,7 @@ export default function Terms() {
         <h2>1. Quem oferece o serviço</h2>
         <p>
           O {PLAN.name} é oferecido pela {LEGAL_NAME}. Quando estes termos
-          dizem &ldquo;nós&rdquo;, falam da {COMPANY_NAME}; &ldquo;você&rdquo; é
+          dizem &ldquo;nós&rdquo;, falam da {LEGAL_NAME} ({COMPANY_NAME}); &ldquo;você&rdquo; é
           a pessoa ou a empresa que contrata. Nosso contato está no final desta
           página.
         </p>
